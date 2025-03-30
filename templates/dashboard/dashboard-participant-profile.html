@@ -1,166 +1,463 @@
-{% extends 'base/base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - EventAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #64748b;
+      --success: #22c55e;
+      --warning: #eab308;
+      --danger: #ef4444;
+      --dark-bg: #0f172a;
+      --dark-card: #1e293b;
+      --dark-border: #334155;
+      --dark-text: #e2e8f0;
+      --dark-text-secondary: #94a3b8;
+    }
 
-{% block title %}Profile - EventAI{% endblock %}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-{% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-2 d-none d-md-block bg-dark sidebar min-vh-100">
-            <div class="sidebar-sticky">
-                <div class="text-center my-4">
-                    <h3 class="text-light">EventAI</h3>
-                </div>
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>OVERVIEW</span>
-                </h6>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_dashboard' %}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_my_events' %}">
-                            <i class="fas fa-calendar-alt"></i> My Events
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_rewards' %}">
-                            <i class="fas fa-star"></i> Rewards
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_explore' %}">
-                            <i class="fas fa-compass"></i> Explore
-                        </a>
-                    </li>
-                </ul>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+      line-height: 1.5;
+    }
 
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>ACTIVITY</span>
-                </h6>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_history' %}">
-                            <i class="fas fa-history"></i> History
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_feedback' %}">
-                            <i class="fas fa-comment"></i> Feedback
-                        </a>
-                    </li>
-                </ul>
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
 
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>ACCOUNT</span>
-                </h6>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'base:participant_profile' %}">
-                            <i class="fas fa-user"></i> Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_settings' %}">
-                            <i class="fas fa-cog"></i> Settings
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:logout' %}">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-card);
+      border-right: 1px solid var(--dark-border);
+      padding: 1.5rem;
+    }
 
-        <!-- Main content -->
-        <main role="main" class="col-md-10 ml-sm-auto px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1>Profile</h1>
-            </div>
+    .sidebar-header {
+      margin-bottom: 2rem;
+    }
 
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
 
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            {% if user.profile_image %}
-                            <img src="{{ user.profile_image.url }}" alt="Profile Image" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                            {% else %}
-                            <img src="{% static 'images/default-profile.png' %}" alt="Default Profile" class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                            {% endif %}
-                            <h4>{{ user.full_name }}</h4>
-                            <p class="text-muted">{{ user.email }}</p>
-                            <p class="text-muted">Member since {{ user.date_joined|date:"F d, Y" }}</p>
-                        </div>
-                    </div>
-                </div>
+    .sidebar-nav-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--dark-text-secondary);
+      margin: 1.5rem 0 0.75rem;
+      letter-spacing: 0.05em;
+    }
 
-                <div class="col-md-8">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Profile Information</h5>
-                            <form method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <label for="profile_image">Profile Image</label>
-                                    <input type="file" class="form-control-file" id="profile_image" name="profile_image">
-                                </div>
-                                <div class="form-group">
-                                    <label for="full_name">Full Name</label>
-                                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ user.full_name }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="email">Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone">Phone</label>
-                                    <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="location">Location</label>
-                                    <input type="text" class="form-control" id="location" name="location" value="{{ user.location }}">
-                                </div>
-                                <div class="form-group">
-                                    <label>Interests</label>
-                                    <div class="row">
-                                        {% for interest in available_interests %}
-                                        <div class="col-md-4">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="interest_{{ interest.id }}" name="interests" value="{{ interest.id }}" {% if interest in user.interests.all %}checked{% endif %}>
-                                                <label class="custom-control-label" for="interest_{{ interest.id }}">{{ interest.name }}</label>
-                                            </div>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save Changes</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+    .sidebar-nav-links {
+      list-style: none;
+    }
+
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: var(--dark-text-secondary);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar-nav-link:hover {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+
+    .sidebar-nav-link.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .sidebar-nav-link i {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.75rem;
+    }
+
+    /* Main Content Styles */
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* Profile Styles */
+    .profile-section {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background-color: var(--dark-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile-avatar-edit {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background-color: var(--primary);
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .profile-avatar-edit:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-email {
+      color: var(--dark-text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .profile-stat {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-stat-value {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .profile-stat-label {
+      font-size: 0.875rem;
+      color: var(--dark-text-secondary);
+    }
+
+    .profile-form {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--dark-text-secondary);
+    }
+
+    .form-input {
+      padding: 0.75rem 1rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.5rem;
+      color: var(--dark-text);
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-textarea {
+      padding: 0.75rem 1rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.5rem;
+      color: var(--dark-text);
+      font-size: 0.875rem;
+      min-height: 100px;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .profile-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--dark-border);
+      }
+
+      .profile-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .profile-stats {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="{% url 'base:participant_dashboard' %}" class="sidebar-logo">EventAI</a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-title">Overview</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_dashboard' %}" class="sidebar-nav-link">
+              <i data-feather="grid"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_my_events' %}" class="sidebar-nav-link">
+              <i data-feather="calendar"></i>
+              My Events
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_rewards' %}" class="sidebar-nav-link">
+              <i data-feather="star"></i>
+              Rewards
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_explore' %}" class="sidebar-nav-link">
+              <i data-feather="compass"></i>
+              Explore
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Activity</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_history' %}" class="sidebar-nav-link">
+              <i data-feather="clock"></i>
+              History
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_feedback' %}" class="sidebar-nav-link">
+              <i data-feather="message-square"></i>
+              Feedback
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Account</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_profile' %}" class="sidebar-nav-link active">
+              <i data-feather="user"></i>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_settings' %}" class="sidebar-nav-link">
+              <i data-feather="settings"></i>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:logout' %}" class="sidebar-nav-link" id="logout-link">
+              <i data-feather="log-out"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
-</div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    // Add any profile-specific JavaScript here
-</script>
-{% endblock %} 
+    
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Profile</h1>
+        <button class="btn btn-primary">Save Changes</button>
+      </div>
+      
+      <div class="profile-content">
+        <!-- Profile Header -->
+        <div class="profile-section">
+          <div class="profile-header">
+            <div class="profile-avatar">
+              <img src="https://via.placeholder.com/120" alt="Profile picture">
+              <div class="profile-avatar-edit">
+                <i data-feather="camera"></i>
+              </div>
+            </div>
+            <div class="profile-info">
+              <h2 class="profile-name">John Doe</h2>
+              <p class="profile-email">john.doe@example.com</p>
+              <div class="profile-stats">
+                <div class="profile-stat">
+                  <span class="profile-stat-value">8</span>
+                  <span class="profile-stat-label">Events Attended</span>
+                </div>
+                <div class="profile-stat">
+                  <span class="profile-stat-value">750</span>
+                  <span class="profile-stat-label">Reward Points</span>
+                </div>
+                <div class="profile-stat">
+                  <span class="profile-stat-value">3</span>
+                  <span class="profile-stat-label">Upcoming Events</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Profile Form -->
+        <div class="profile-section">
+          <form class="profile-form">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input" value="John Doe">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-input" value="john.doe@example.com">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" class="form-input" value="+1 (555) 123-4567">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Bio</label>
+              <textarea class="form-textarea">Passionate event enthusiast and tech lover. Always excited to explore new experiences and connect with like-minded individuals.</textarea>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Location</label>
+              <input type="text" class="form-input" value="New York, USA">
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Interests</label>
+              <input type="text" class="form-input" value="Technology, Arts, Business, Networking">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Initialize Feather icons
+    feather.replace();
+  </script>
+</body>
+</html> 

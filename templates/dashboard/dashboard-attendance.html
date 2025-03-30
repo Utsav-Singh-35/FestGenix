@@ -1,198 +1,119 @@
-{% extends 'base/base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance - EventAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --dark-text: #e2e8f0;
+            --dark-text-secondary: #94a3b8;
+        }
 
-{% block content %}
-<div class="dashboard">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <a href="#" class="sidebar-logo">EventAI</a>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <div class="sidebar-nav-title">Overview</div>
-            <ul class="sidebar-nav-links">
-                <li>
-                    <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="grid"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="calendar"></i>
-                        Events
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="users"></i>
-                        Team
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="dollar-sign"></i>
-                        Budget
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="sidebar-nav-title">Analytics</div>
-            <ul class="sidebar-nav-links">
-                <li>
-                    <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="bar-chart-2"></i>
-                        Reports
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link active">
-                        <i data-feather="pie-chart"></i>
-                        Attendance
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="sidebar-nav-title">Account</div>
-            <ul class="sidebar-nav-links">
-                <li>
-                    <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="settings"></i>
-                        Settings
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
-                        <i data-feather="log-out"></i>
-                        Logout
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <!-- Main Content -->
-    <div class="dashboard-main">
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">Attendance Analytics</h1>
-            <button class="attendance-button" title="Export attendance data" aria-label="Export attendance data">
-                <i data-feather="download"></i>
-                Export Data
-            </button>
-        </div>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            line-height: 1.5;
+        }
 
-        <!-- Attendance Overview -->
-        <div class="attendance-stats">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i data-feather="users"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Total Attendees</h3>
-                    <p>1,248</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i data-feather="check-circle"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Average Attendance</h3>
-                    <p>87%</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i data-feather="trending-up"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Growth Rate</h3>
-                    <p>+12.5%</p>
-                </div>
-            </div>
-        </div>
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
 
-        <!-- Attendance Charts -->
-        <div class="charts-grid">
-            <!-- Attendance Trend -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h2>Attendance Trend</h2>
-                    <select class="time-select" title="Time period" aria-label="Select time period">
-                        <option>Last 30 days</option>
-                        <option>Last 60 days</option>
-                        <option>Last 90 days</option>
-                    </select>
-                </div>
-                <canvas id="attendanceTrendChart"></canvas>
-            </div>
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--dark-card);
+            border-right: 1px solid var(--dark-border);
+            padding: 1.5rem;
+        }
 
-            <!-- Demographics -->
-            <div class="chart-container">
-                <div class="chart-header">
-                    <h2>Demographics</h2>
-                </div>
-                <canvas id="demographicsChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Event Attendance Table -->
-        <div class="attendance-table-container">
-            <div class="table-header">
-                <h2>Event Attendance</h2>
-                <div class="table-actions">
-                    <select class="filter-select" title="Filter events" aria-label="Filter events">
-                        <option>All Events</option>
-                        <option>Upcoming Events</option>
-                        <option>Past Events</option>
-                    </select>
-                    <button class="export-button" title="Export table" aria-label="Export table">
-                        <i data-feather="download"></i>
-                        Export
-                    </button>
-                </div>
-            </div>
-            <table class="attendance-table">
-                <thead>
-                    <tr>
-                        <th>Event Name</th>
-                        <th>Date</th>
-                        <th>Total Capacity</th>
-                        <th>Registered</th>
-                        <th>Attended</th>
-                        <th>Attendance Rate</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Tech Conference 2024</td>
-                        <td>Apr 15, 2024</td>
-                        <td>300</td>
-                        <td>285</td>
-                        <td>250</td>
-                        <td>
-                            <div class="attendance-rate">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 83%"></div>
-                                </div>
-                                <span>83%</span>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- Add more events here -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<style>
-    .attendance-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
+        .sidebar-header {
             margin-bottom: 2rem;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .sidebar-nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--dark-text-secondary);
+            margin: 1.5rem 0 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav-links {
+            list-style: none;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--dark-text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav-link:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .sidebar-nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .sidebar-nav-link i {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        /* Main Content Styles */
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.875rem;
+            font-weight: 700;
         }
 
         .attendance-button {
@@ -218,168 +139,349 @@
             margin-right: 0.5rem;
         }
 
-    .charts-grid {
+        /* Attendance Overview */
+        .attendance-overview {
             display: grid;
-        grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-    .chart-container {
+        .attendance-card {
             background-color: var(--dark-card);
             border: 1px solid var(--dark-border);
             border-radius: 0.75rem;
             padding: 1.5rem;
         }
 
-    .chart-header {
+        .attendance-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .attendance-card-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .attendance-card-title {
+            color: var(--dark-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .attendance-card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
 
-    .time-select,
-    .filter-select {
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .chart-select {
             padding: 0.5rem;
+            background-color: var(--dark-bg);
             border: 1px solid var(--dark-border);
             border-radius: 0.5rem;
-        background-color: var(--dark-bg);
             color: var(--dark-text);
         }
 
-        .attendance-table-container {
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Table Section */
+        .table-section {
             background-color: var(--dark-card);
             border: 1px solid var(--dark-border);
             border-radius: 0.75rem;
             overflow: hidden;
         }
 
-    .table-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--dark-border);
-    }
-
-    .table-actions {
-        display: flex;
-        gap: 1rem;
-        align-items: center;
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--dark-border);
         }
 
-        .attendance-table {
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .attendance-table th,
-        .attendance-table td {
-        padding: 1rem 1.5rem;
+        .table th,
+        .table td {
+            padding: 1rem 1.5rem;
             text-align: left;
             border-bottom: 1px solid var(--dark-border);
         }
 
-        .attendance-table th {
-            font-weight: 600;
-        color: var(--dark-text-secondary);
-    }
+        .table th {
+            color: var(--dark-text-secondary);
+            font-weight: 500;
+        }
 
-    .attendance-rate {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .progress-bar {
-        flex: 1;
-        height: 0.5rem;
-        background-color: var(--dark-border);
+        .status-badge {
+            display: inline-flex;
+            padding: 0.25rem 0.75rem;
             border-radius: 9999px;
-        overflow: hidden;
-    }
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
 
-    .progress-fill {
-        height: 100%;
-        background-color: var(--primary);
-        border-radius: 9999px;
-    }
+        .status-badge.present {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
 
-        @media (max-width: 1024px) {
-        .charts-grid {
+        .status-badge.absent {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--dark-border);
+            }
+
+            .attendance-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-section {
                 grid-template-columns: 1fr;
             }
         }
     </style>
-
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-logo">EventAI</a>
+            </div>
+            <nav class="sidebar-nav">
+                <p class="sidebar-nav-title">Overview</p>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="grid"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="calendar"></i>
+                            Events
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="users"></i>
+                            Team
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="dollar-sign"></i>
+                            Budget
+                        </a>
+                    </li>
+                </ul>
+                <p class="sidebar-nav-title">Analytics</p>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="bar-chart-2"></i>
+                            Reports
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link active">
+                            <i data-feather="user-check"></i>
+                            Attendance
+                        </a>
+                    </li>
+                </ul>
+                <p class="sidebar-nav-title">Account</p>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="settings"></i>
+                            Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:logout' %}" class="sidebar-nav-link" style="color: var(--danger);">
+                            <i data-feather="log-out"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Attendance Tracking</h1>
+                <button class="attendance-button">
+                    <i data-feather="download"></i>
+                    Export Attendance
+                </button>
+            </div>
+            <div class="attendance-overview">
+                <div class="attendance-card">
+                    <div class="attendance-card-header">
+                        <div class="attendance-card-icon">
+                            <i data-feather="users"></i>
+                        </div>
+                        <div>
+                            <h3 class="attendance-card-title">Total Participants</h3>
+                            <p class="attendance-card-value">1,234</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="attendance-card">
+                    <div class="attendance-card-header">
+                        <div class="attendance-card-icon">
+                            <i data-feather="user-check"></i>
+                        </div>
+                        <div>
+                            <h3 class="attendance-card-title">Present Today</h3>
+                            <p class="attendance-card-value">985</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="attendance-card">
+                    <div class="attendance-card-header">
+                        <div class="attendance-card-icon">
+                            <i data-feather="percent"></i>
+                        </div>
+                        <div>
+                            <h3 class="attendance-card-title">Attendance Rate</h3>
+                            <p class="attendance-card-value">79.8%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="charts-section">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Daily Attendance</h2>
+                        <select class="chart-select" title="Select time period">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 90 Days</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h2 class="chart-title">Attendance by Department</h2>
+                        <select class="chart-select" title="Select department filter">
+                            <option>All Departments</option>
+                            <option>Marketing</option>
+                            <option>Technical</option>
+                            <option>Operations</option>
+                        </select>
+                    </div>
+                    <div class="chart-container">
+                        <!-- Chart will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            <div class="table-section">
+                <div class="table-header">
+                    <h2 class="table-title">Today's Attendance</h2>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Department</th>
+                            <th>Check In</th>
+                            <th>Check Out</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Doe</td>
+                            <td>Marketing</td>
+                            <td>09:00 AM</td>
+                            <td>05:30 PM</td>
+                            <td><span class="status-badge present">Present</span></td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>Technical</td>
+                            <td>09:15 AM</td>
+                            <td>06:00 PM</td>
+                            <td><span class="status-badge present">Present</span></td>
+                        </tr>
+                        <tr>
+                            <td>Mike Johnson</td>
+                            <td>Operations</td>
+                            <td>--</td>
+                            <td>--</td>
+                            <td><span class="status-badge absent">Absent</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
     <script>
-        // Initialize Feather icons
         feather.replace();
-
-    // Initialize Attendance Trend Chart
-    const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
-    new Chart(trendCtx, {
-            type: 'line',
-            data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Attendance Rate',
-                data: [75, 82, 78, 85, 80, 87],
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                    display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                    max: 100,
-                        ticks: {
-                        callback: value => value + '%'
-                    }
-                }
-            }
-        }
-    });
-
-    // Initialize Demographics Chart
-    const demoCtx = document.getElementById('demographicsChart').getContext('2d');
-    new Chart(demoCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Students', 'Professionals', 'Entrepreneurs', 'Others'],
-            datasets: [{
-                data: [45, 30, 15, 10],
-                backgroundColor: [
-                    '#6366f1',
-                    '#22c55e',
-                    '#eab308',
-                    '#64748b'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        color: '#e2e8f0'
-                        }
-                    }
-                }
-            }
-        });
     </script>
-{% endblock %} 
+</body>
+</html> 

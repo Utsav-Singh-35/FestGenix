@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ page_title|default:"Dashboard" }} - EventAI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/participant-dashboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'base:participant_dashboard' %}" class="sidebar-logo">EventAI</a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-title">Overview</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:participant_dashboard' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_dashboard' %}active{% endif %}">
+                        <i data-feather="grid"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:participant_my_events' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_my_events' %}active{% endif %}">
+                        <i data-feather="calendar"></i>
+                        My Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:participant_rewards' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_rewards' %}active{% endif %}">
+                        <i data-feather="star"></i>
+                        Rewards
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:participant_explore' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_explore' %}active{% endif %}">
+                        <i data-feather="compass"></i>
+                        Explore
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Activity</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:participant_history' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_history' %}active{% endif %}">
+                        <i data-feather="clock"></i>
+                        History
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:participant_feedback' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_feedback' %}active{% endif %}">
+                        <i data-feather="message-square"></i>
+                        Feedback
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Account</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:participant_profile' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_profile' %}active{% endif %}">
+                        <i data-feather="user"></i>
+                        Profile
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:participant_settings' %}" class="sidebar-nav-link {% if request.resolver_match.url_name == 'participant_settings' %}active{% endif %}">
+                        <i data-feather="settings"></i>
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:logout' %}" class="sidebar-nav-link" id="logout-link">
+                        <i data-feather="log-out"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="dashboard-main">
+        {% block dashboard_content %}{% endblock %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Initialize Feather icons
+    feather.replace();
+
+    // Logout functionality
+    document.getElementById('logout-link').addEventListener('click', function(e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to logout?')) {
+            window.location.href = this.href;
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %} 

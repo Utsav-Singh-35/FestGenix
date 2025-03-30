@@ -1,0 +1,191 @@
+{% extends 'dashboard/base_participant.html' %}
+{% load static %}
+
+{% block title %}Feedback - EventAI{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'css/participant-feedback.css' %}">
+{% endblock %}
+
+{% block dashboard_content %}
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Feedback</h1>
+            </div>
+            
+            <!-- Feedback Overview -->
+            <div class="feedback-overview">
+                <div class="feedback-card">
+                    <div class="feedback-card-header">
+                        <div class="feedback-card-icon">
+                            <i data-feather="message-square"></i>
+                        </div>
+                        <div>
+                            <div class="feedback-card-title">Total Feedback</div>
+                            <div class="feedback-card-value">8</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feedback-card">
+                    <div class="feedback-card-header">
+                        <div class="feedback-card-icon">
+                            <i data-feather="check-circle"></i>
+                        </div>
+                        <div>
+                            <div class="feedback-card-title">Resolved</div>
+                            <div class="feedback-card-value">6</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feedback-card">
+                    <div class="feedback-card-header">
+                        <div class="feedback-card-icon">
+                            <i data-feather="clock"></i>
+                        </div>
+                        <div>
+                            <div class="feedback-card-title">Pending</div>
+                            <div class="feedback-card-value">2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Form -->
+            <div class="feedback-form">
+                <div class="form-header">
+                    <h2 class="form-title">Submit Feedback</h2>
+                    <p class="form-description">Share your thoughts about events, suggestions, or report issues.</p>
+                </div>
+                <form id="feedbackForm" onsubmit="submitFeedback(event)">
+                    <div class="form-group">
+            <label class="form-label" for="event-select">Event</label>
+            <select class="form-select" required id="event-select" name="event" title="Select an event">
+                            <option value="">Select an event</option>
+                            <option value="tech-conference">Tech Conference 2024</option>
+                            <option value="cultural-fest">Cultural Festival</option>
+                            <option value="workshop">Web Development Workshop</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+            <label class="form-label" for="type-select">Type</label>
+            <select class="form-select" required id="type-select" name="type" title="Select feedback type">
+                            <option value="">Select feedback type</option>
+                            <option value="suggestion">Suggestion</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="praise">Praise</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+            <label class="form-label" for="feedback-message">Message</label>
+            <textarea class="form-textarea" id="feedback-message" name="message" placeholder="Enter your feedback here..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-button">
+                        <i data-feather="send"></i>
+                        Submit Feedback
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Feedback List -->
+            <div class="feedback-list">
+                <div class="feedback-header">
+                    <h2 class="feedback-title">Your Feedback History</h2>
+                    <div class="feedback-filters">
+            <select class="filter-select" id="eventFilter" title="Filter by event">
+                            <option value="all">All Events</option>
+                            <option value="tech-conference">Tech Conference</option>
+                            <option value="cultural-fest">Cultural Festival</option>
+                            <option value="workshop">Web Development Workshop</option>
+                        </select>
+            <select class="filter-select" id="typeFilter" title="Filter by type">
+                            <option value="all">All Types</option>
+                            <option value="suggestion">Suggestions</option>
+                            <option value="complaint">Complaints</option>
+                            <option value="praise">Praise</option>
+                        </select>
+            <select class="filter-select" id="statusFilter" title="Filter by status">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                    </div>
+                </div>
+                
+    <!-- Feedback Items -->
+    {% for feedback in feedbacks %}
+                <div class="feedback-item">
+                    <div class="feedback-item-header">
+                        <div>
+                <h3 class="feedback-item-title">{{ feedback.event }}</h3>
+                <div class="feedback-item-meta">Submitted on {{ feedback.created_at|date:"M d, Y" }}</div>
+                        </div>
+                        <div class="feedback-tags">
+                <span class="feedback-tag tag-{{ feedback.type|lower }}">{{ feedback.type }}</span>
+                        </div>
+                    </div>
+                    <div class="feedback-item-content">
+            {{ feedback.message }}
+                    </div>
+                    <div class="feedback-item-footer">
+                        <div class="feedback-actions">
+                <button class="action-button" onclick="viewFeedback('{{ feedback.id }}')" title="View feedback details" aria-label="View feedback details">
+                                <i data-feather="eye"></i>
+                            </button>
+                <button class="action-button" onclick="editFeedback('{{ feedback.id }}')" title="Edit feedback" aria-label="Edit feedback">
+                                <i data-feather="edit-2"></i>
+                            </button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+    <script>
+        // Filter functionality
+        document.getElementById('eventFilter').addEventListener('change', filterFeedback);
+        document.getElementById('typeFilter').addEventListener('change', filterFeedback);
+        document.getElementById('statusFilter').addEventListener('change', filterFeedback);
+
+        function filterFeedback() {
+            const eventFilter = document.getElementById('eventFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            
+            const feedbackItems = document.querySelectorAll('.feedback-item');
+            feedbackItems.forEach(item => {
+                const event = item.querySelector('.feedback-item-title').textContent.toLowerCase();
+                const type = item.querySelector('.feedback-tag').textContent.toLowerCase();
+                const status = item.querySelector('.feedback-tag').classList.contains('tag-suggestion') ? 'resolved' : 'pending';
+                
+                const eventMatch = eventFilter === 'all' || event.includes(eventFilter);
+                const typeMatch = typeFilter === 'all' || type.includes(typeFilter);
+                const statusMatch = statusFilter === 'all' || status === statusFilter;
+                
+                item.style.display = eventMatch && typeMatch && statusMatch ? 'block' : 'none';
+            });
+        }
+
+        // Form submission
+        function submitFeedback(event) {
+            event.preventDefault();
+            alert('Feedback submitted successfully!');
+            event.target.reset();
+        }
+
+        // Action functions
+        function viewFeedback(id) {
+            alert(`Viewing feedback: ${id}`);
+            // Add view feedback logic here
+        }
+
+        function editFeedback(id) {
+            alert(`Editing feedback: ${id}`);
+            // Add edit feedback logic here
+        }
+    </script>
+{% endblock %} 

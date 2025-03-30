@@ -1,497 +1,379 @@
-{% extends 'base/base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Management - EventAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --dark-text: #e2e8f0;
+            --dark-text-secondary: #94a3b8;
+        }
 
-{% block content %}
-<div class="dashboard">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <a href="#" class="sidebar-logo">EventAI</a>
-        </div>
-        
-        <nav class="sidebar-nav">
-            <div class="sidebar-nav-title">Overview</div>
-            <ul class="sidebar-nav-links">
-                <li>
-                    <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="grid"></i>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="calendar"></i>
-                        Events
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link active">
-                        <i data-feather="users"></i>
-                        Team
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="dollar-sign"></i>
-                        Budget
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="sidebar-nav-title">Analytics</div>
-            <ul class="sidebar-nav-links">
-                <li>
-                    <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="bar-chart-2"></i>
-                        Reports
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="pie-chart"></i>
-                        Attendance
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="sidebar-nav-title">Account</div>
-            <ul class="sidebar-nav-links">
-                <li>
-                    <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="settings"></i>
-                        Settings
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
-                        <i data-feather="log-out"></i>
-                        Logout
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            line-height: 1.5;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--dark-card);
+            border-right: 1px solid var(--dark-border);
+            padding: 1.5rem;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .sidebar-nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--dark-text-secondary);
+            margin: 1.5rem 0 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav-links {
+            list-style: none;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--dark-text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav-link:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .sidebar-nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .sidebar-nav-link i {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        /* Main Content Styles */
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .team-button {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .team-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .team-button i {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .team-card {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .team-member:last-child {
+            border-bottom: none;
+        }
+
+        .team-member-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .team-member-info {
+            flex: 1;
+        }
+
+        .team-member-name {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .team-member-role {
+            font-size: 0.875rem;
+            color: var(--dark-text-secondary);
+        }
+
+        .team-member-status {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+        }
+
+        .status-active {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .status-inactive {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--dark-border);
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-logo">EventAI</a>
+            </div>
+            <nav class="sidebar-nav">
+                <p class="sidebar-nav-title">Overview</p>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="grid"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="calendar"></i>
+                            Events
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link active">
+                            <i data-feather="users"></i>
+                            Team
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="dollar-sign"></i>
+                            Budget
+                        </a>
+                    </li>
+                </ul>
+                <p class="sidebar-nav-title">Analytics</p>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="bar-chart-2"></i>
+                            Reports
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="user-check"></i>
+                            Attendance
+                        </a>
+                    </li>
+                </ul>
+                <p class="sidebar-nav-title">Account</p>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
+                            <i data-feather="settings"></i>
+                            Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'base:logout' %}" class="sidebar-nav-link" style="color: var(--danger);">
+                            <i data-feather="log-out"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <main class="dashboard-main">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Team Management</h1>
+                <button class="team-button">
+                    <i data-feather="user-plus"></i>
+                    Add Team Member
+                </button>
+            </div>
+            <div class="team-grid">
+                <div class="team-card">
+                    <h2 class="card-title">Event Coordinators</h2>
+                    <div class="team-member">
+                        <div class="team-member-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div class="team-member-info">
+                            <h3 class="team-member-name">John Doe</h3>
+                            <p class="team-member-role">Lead Coordinator</p>
+                        </div>
+                        <span class="team-member-status status-active">Active</span>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-member-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div class="team-member-info">
+                            <h3 class="team-member-name">Jane Smith</h3>
+                            <p class="team-member-role">Assistant Coordinator</p>
+                        </div>
+                        <span class="team-member-status status-active">Active</span>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <h2 class="card-title">Marketing Team</h2>
+                    <div class="team-member">
+                        <div class="team-member-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div class="team-member-info">
+                            <h3 class="team-member-name">Mike Johnson</h3>
+                            <p class="team-member-role">Marketing Manager</p>
+                        </div>
+                        <span class="team-member-status status-active">Active</span>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-member-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div class="team-member-info">
+                            <h3 class="team-member-name">Sarah Wilson</h3>
+                            <p class="team-member-role">Social Media Specialist</p>
+                        </div>
+                        <span class="team-member-status status-inactive">Inactive</span>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <h2 class="card-title">Technical Support</h2>
+                    <div class="team-member">
+                        <div class="team-member-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div class="team-member-info">
+                            <h3 class="team-member-name">David Brown</h3>
+                            <p class="team-member-role">Tech Lead</p>
+                        </div>
+                        <span class="team-member-status status-active">Active</span>
+                    </div>
+                    <div class="team-member">
+                        <div class="team-member-avatar">
+                            <i data-feather="user"></i>
+                        </div>
+                        <div class="team-member-info">
+                            <h3 class="team-member-name">Emily Davis</h3>
+                            <p class="team-member-role">IT Support</p>
+                        </div>
+                        <span class="team-member-status status-active">Active</span>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-
-    <!-- Main Content -->
-    <div class="dashboard-main">
-        <div class="dashboard-header">
-            <h1 class="dashboard-title">Team Management</h1>
-            <button class="team-button" title="Add new team member" aria-label="Add new team member">
-                <i data-feather="user-plus"></i>
-                Add Member
-            </button>
-        </div>
-
-        <!-- Team Overview -->
-        <div class="team-stats">
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i data-feather="users"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Total Members</h3>
-                    <p>24</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i data-feather="user-check"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Active Members</h3>
-                    <p>20</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">
-                    <i data-feather="briefcase"></i>
-                </div>
-                <div class="stat-content">
-                    <h3>Departments</h3>
-                    <p>5</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Team Table -->
-        <div class="team-table-container">
-            <div class="table-header">
-                <h2>Team Members</h2>
-                <div class="table-actions">
-                    <select class="filter-select" title="Filter team members" aria-label="Filter team members">
-                        <option>All Members</option>
-                        <option>Active Members</option>
-                        <option>Inactive Members</option>
-                    </select>
-                    <button class="export-button" title="Export team data" aria-label="Export team data">
-                        <i data-feather="download"></i>
-                        Export
-                    </button>
-                </div>
-            </div>
-            <table class="team-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Role</th>
-                        <th>Department</th>
-                        <th>Status</th>
-                        <th>Joined Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>
-                            <div class="team-member">
-                                <img src="https://ui-avatars.com/api/?name=John+Smith" alt="John Smith" class="member-avatar">
-                                <div class="member-info">
-                                    <div class="member-name">John Smith</div>
-                                    <div class="member-email">john.smith@email.com</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>Event Coordinator</td>
-                        <td>Operations</td>
-                        <td><span class="status-badge active">Active</span></td>
-                        <td>Jan 15, 2024</td>
-                        <td>
-                            <div class="action-buttons">
-                                <button class="btn-icon" title="Edit member" aria-label="Edit member">
-                                    <i data-feather="edit"></i>
-                                </button>
-                                <button class="btn-icon" title="View profile" aria-label="View profile">
-                                    <i data-feather="eye"></i>
-                                </button>
-                                <button class="btn-icon" title="Remove member" aria-label="Remove member">
-                                    <i data-feather="trash-2"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <!-- Add more team members here -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<style>
-    :root {
-        --primary: #6C63FF;
-        --primary-dark: #5A51D6;
-        --secondary: #64748b;
-        --success: #22c55e;
-        --warning: #eab308;
-        --danger: #ef4444;
-        --dark-bg: #0F1629;
-        --dark-card: #1B2337;
-        --dark-border: #2A3347;
-        --dark-text: #E2E8F0;
-        --dark-text-secondary: #94A3B8;
-    }
-
-    .dashboard {
-        display: flex;
-        min-height: 100vh;
-        background-color: var(--dark-bg);
-    }
-
-    /* Sidebar Styles */
-    .sidebar {
-        width: 280px;
-        background-color: var(--dark-card);
-        border-right: 1px solid var(--dark-border);
-        padding: 1.5rem;
-    }
-
-    .sidebar-header {
-        margin-bottom: 2rem;
-    }
-
-    .sidebar-logo {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-        text-decoration: none;
-    }
-
-    .sidebar-nav-title {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        color: var(--dark-text-secondary);
-        margin: 1.5rem 0 0.75rem;
-        letter-spacing: 0.05em;
-    }
-
-    .sidebar-nav-links {
-        list-style: none;
-    }
-
-    .sidebar-nav-link {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        color: var(--dark-text-secondary);
-        text-decoration: none;
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
-        transition: all 0.2s;
-    }
-
-    .sidebar-nav-link:hover {
-        background-color: rgba(108, 99, 255, 0.1);
-        color: var(--primary);
-    }
-
-    .sidebar-nav-link.active {
-        background-color: var(--primary);
-        color: white;
-    }
-
-    .sidebar-nav-link i {
-        width: 1.25rem;
-        height: 1.25rem;
-        margin-right: 0.75rem;
-    }
-
-    /* Main Content Styles */
-    .dashboard-main {
-        flex: 1;
-        padding: 2rem;
-        overflow-y: auto;
-    }
-
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
-
-    .dashboard-title {
-        font-size: 1.875rem;
-        font-weight: 700;
-        color: var(--dark-text);
-    }
-
-    /* Stats Grid */
-    .team-stats {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1.5rem;
-        margin-bottom: 2rem;
-    }
-
-    .stat-card {
-        background-color: var(--dark-card);
-        border: 1px solid var(--dark-border);
-        border-radius: 1rem;
-        padding: 1.5rem;
-    }
-
-    .stat-icon {
-        width: 3rem;
-        height: 3rem;
-        background-color: rgba(108, 99, 255, 0.1);
-        color: var(--primary);
-        border-radius: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1rem;
-    }
-
-    .stat-content h3 {
-        color: var(--dark-text-secondary);
-        font-size: 0.875rem;
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-content p {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--dark-text);
-    }
-
-    /* Team Table Container */
-    .team-table-container {
-        background-color: var(--dark-card);
-        border: 1px solid var(--dark-border);
-        border-radius: 1rem;
-        overflow: hidden;
-    }
-
-    .table-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1.5rem;
-        border-bottom: 1px solid var(--dark-border);
-    }
-
-    .table-header h2 {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: var(--dark-text);
-    }
-
-    .table-actions {
-        display: flex;
-        gap: 1rem;
-    }
-
-    .filter-select {
-        padding: 0.5rem 1rem;
-        background-color: var(--dark-bg);
-        border: 1px solid var(--dark-border);
-        border-radius: 0.5rem;
-        color: var(--dark-text);
-    }
-
-    .export-button {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        background-color: transparent;
-        border: 1px solid var(--dark-border);
-        border-radius: 0.5rem;
-        color: var(--primary);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .export-button:hover {
-        background-color: rgba(108, 99, 255, 0.1);
-    }
-
-    .export-button i {
-        width: 1rem;
-        height: 1rem;
-        margin-right: 0.5rem;
-    }
-
-    /* Team Table */
-    .team-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .team-table th {
-        padding: 1rem 1.5rem;
-        text-align: left;
-        color: var(--dark-text-secondary);
-        font-weight: 500;
-        border-bottom: 1px solid var(--dark-border);
-    }
-
-    .team-table td {
-        padding: 1rem 1.5rem;
-        color: var(--dark-text);
-        border-bottom: 1px solid var(--dark-border);
-    }
-
-    .team-member {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    .member-avatar {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 50%;
-    }
-
-    .member-info {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .member-name {
-        color: var(--dark-text);
-        font-weight: 500;
-    }
-
-    .member-email {
-        color: var(--dark-text-secondary);
-        font-size: 0.875rem;
-    }
-
-    .status-badge {
-        display: inline-flex;
-        padding: 0.25rem 0.75rem;
-        border-radius: 1rem;
-        font-size: 0.875rem;
-    }
-
-    .status-badge.active {
-        background-color: rgba(34, 197, 94, 0.1);
-        color: #22c55e;
-    }
-
-    .status-badge.on-leave {
-        background-color: rgba(234, 179, 8, 0.1);
-        color: #eab308;
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    .btn-icon {
-        width: 2rem;
-        height: 2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background-color: transparent;
-        border: 1px solid var(--dark-border);
-        border-radius: 0.5rem;
-        color: var(--dark-text-secondary);
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-icon:hover {
-        background-color: rgba(108, 99, 255, 0.1);
-        color: var(--primary);
-    }
-
-    /* Add Member Button */
-    .team-button {
-        display: flex;
-        align-items: center;
-        padding: 0.75rem 1.5rem;
-        background-color: var(--primary);
-        color: white;
-        border: none;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-
-    .team-button:hover {
-        background-color: var(--primary-dark);
-    }
-
-    .team-button i {
-        width: 1.25rem;
-        height: 1.25rem;
-        margin-right: 0.5rem;
-    }
-</style>
-
-<script>
-    // Initialize Feather icons
-    feather.replace();
-
-    // Add Member button functionality
-    document.querySelector('.team-button').addEventListener('click', function() {
-        // Add member logic here
-        alert('Add member functionality will be implemented here');
-    });
-</script>
-{% endblock %} 
+    <script>
+        feather.replace();
+    </script>
+</body>
+</html> 

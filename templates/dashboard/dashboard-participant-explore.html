@@ -1,510 +1,530 @@
-{% extends 'base/base.html' %}
-{% load static %}
-
-{% block title %}Explore Events - EventAI{% endblock %}
-
-{% block extra_css %}
-<style>
-  :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --secondary: #64748b;
-    --success: #22c55e;
-    --warning: #eab308;
-    --danger: #ef4444;
-    --dark-bg: #0f172a;
-    --dark-card: #1e293b;
-    --dark-border: #334155;
-    --dark-text: #e2e8f0;
-    --dark-text-secondary: #94a3b8;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--dark-bg);
-    color: var(--dark-text);
-    line-height: 1.5;
-  }
-
-  .dashboard {
-    display: flex;
-    min-height: 100vh;
-  }
-
-  /* Sidebar Styles */
-  .sidebar {
-    width: 280px;
-    background-color: var(--dark-card);
-    border-right: 1px solid var(--dark-border);
-    padding: 1.5rem;
-  }
-
-  .sidebar-header {
-    margin-bottom: 2rem;
-  }
-
-  .sidebar-logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-    text-decoration: none;
-  }
-
-  .sidebar-nav-title {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: var(--dark-text-secondary);
-    margin: 1.5rem 0 0.75rem;
-    letter-spacing: 0.05em;
-  }
-
-  .sidebar-nav-links {
-    list-style: none;
-  }
-
-  .sidebar-nav-link {
-    display: flex;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    color: var(--dark-text-secondary);
-    text-decoration: none;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
-    transition: all 0.2s;
-  }
-
-  .sidebar-nav-link:hover {
-    background-color: rgba(99, 102, 241, 0.1);
-    color: var(--primary);
-  }
-
-  .sidebar-nav-link.active {
-    background-color: var(--primary);
-    color: white;
-  }
-
-  .sidebar-nav-link i {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.75rem;
-  }
-
-  /* Main Content Styles */
-  .dashboard-main {
-    flex: 1;
-    padding: 2rem;
-    overflow-y: auto;
-  }
-
-  .dashboard-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-
-  .dashboard-title {
-    font-size: 1.875rem;
-    font-weight: 700;
-  }
-
-  /* Search Section */
-  .search-section {
-    background-color: var(--dark-card);
-    border: 1px solid var(--dark-border);
-    border-radius: 0.75rem;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .search-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .search-input {
-    background-color: var(--dark-bg);
-    border: 1px solid var(--dark-border);
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-    color: var(--dark-text);
-    width: 100%;
-  }
-
-  .search-select {
-    background-color: var(--dark-bg);
-    border: 1px solid var(--dark-border);
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-    color: var(--dark-text);
-    width: 100%;
-  }
-
-  .search-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem 2rem;
-    background-color: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  .search-button:hover {
-    background-color: var(--primary-dark);
-  }
-
-  .search-button i {
-    width: 1.25rem;
-    height: 1.25rem;
-    margin-right: 0.5rem;
-  }
-
-  /* View Toggle */
-  .view-toggle {
-    display: flex;
-    gap: 0.5rem;
-    margin-left: auto;
-  }
-
-  .view-toggle-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 2.5rem;
-    height: 2.5rem;
-    background-color: var(--dark-card);
-    border: 1px solid var(--dark-border);
-    border-radius: 0.5rem;
-    color: var(--dark-text-secondary);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .view-toggle-button:hover,
-  .view-toggle-button.active {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
-  }
-
-  /* Event Cards */
-  .events-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-  }
-
-  .event-card {
-    background-color: var(--dark-card);
-    border: 1px solid var(--dark-border);
-    border-radius: 0.75rem;
-    overflow: hidden;
-  }
-
-  .event-image {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-  }
-
-  .event-content {
-    padding: 1.5rem;
-  }
-
-  .event-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--dark-text);
-  }
-
-  .event-details {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    color: var(--dark-text-secondary);
-    font-size: 0.875rem;
-  }
-
-  .event-detail {
-    display: flex;
-    align-items: center;
-  }
-
-  .event-detail i {
-    width: 1rem;
-    height: 1rem;
-    margin-right: 0.5rem;
-  }
-
-  .event-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    border-top: 1px solid var(--dark-border);
-  }
-
-  .event-price {
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .register-button {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    background-color: rgba(99, 102, 241, 0.1);
-    color: var(--primary);
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .register-button:hover {
-    background-color: var(--primary);
-    color: white;
-  }
-
-  /* List View */
-  .events-list .event-card {
-    display: grid;
-    grid-template-columns: 200px 1fr auto;
-    gap: 1.5rem;
-  }
-
-  .events-list .event-image {
-    height: 100%;
-  }
-
-  .events-list .event-content {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .events-list .event-footer {
-    border-top: none;
-    padding-top: 0;
-  }
-
-  @media (max-width: 1024px) {
-    .search-grid {
-      grid-template-columns: 1fr;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Events - EventAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #64748b;
+      --success: #22c55e;
+      --warning: #eab308;
+      --danger: #ef4444;
+      --dark-bg: #0f172a;
+      --dark-card: #1e293b;
+      --dark-border: #334155;
+      --dark-text: #e2e8f0;
+      --dark-text-secondary: #94a3b8;
     }
 
-    .events-list .event-card {
-      grid-template-columns: 1fr;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .events-list .event-image {
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+      line-height: 1.5;
+    }
+
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-card);
+      border-right: 1px solid var(--dark-border);
+      padding: 1.5rem;
+    }
+
+    .sidebar-header {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .sidebar-nav-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--dark-text-secondary);
+      margin: 1.5rem 0 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-nav-links {
+      list-style: none;
+    }
+
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: var(--dark-text-secondary);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar-nav-link:hover {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+
+    .sidebar-nav-link.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .sidebar-nav-link i {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.75rem;
+    }
+
+    /* Main Content Styles */
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+    }
+
+    /* Search and Filter Section */
+    .explore-filters {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .search-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.5rem;
+      color: var(--dark-text);
+      font-size: 1rem;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .filter-select {
+      padding: 0.75rem 1rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.5rem;
+      color: var(--dark-text);
+      font-size: 0.875rem;
+      cursor: pointer;
+      min-width: 150px;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Event Grid */
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .event-card {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      transition: all 0.2s;
+    }
+
+    .event-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .event-image {
+      width: 100%;
       height: 160px;
+      object-fit: cover;
+      background-color: var(--dark-bg);
     }
-  }
-</style>
-{% endblock %}
 
-{% block content %}
-<div class="dashboard">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="sidebar-header">
-      <a href="#" class="sidebar-logo">EventAI</a>
+    .event-content {
+      padding: 1.5rem;
+    }
+
+    .event-date {
+      font-size: 0.875rem;
+      color: var(--dark-text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .event-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-description {
+      color: var(--dark-text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .event-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 1rem;
+      border-top: 1px solid var(--dark-border);
+    }
+
+    .event-price {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .event-tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .event-tag {
+      padding: 0.25rem 0.75rem;
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .register-button {
+      padding: 0.5rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .register-button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    /* View Toggle */
+    .view-toggle {
+      display: flex;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+
+    .view-button {
+      padding: 0.5rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.5rem;
+      color: var(--dark-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .view-button:hover,
+    .view-button.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--dark-border);
+      }
+
+      .filter-group {
+        flex-direction: column;
+      }
+
+      .event-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="{% url 'base:participant_dashboard' %}" class="sidebar-logo">EventAI</a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-title">Overview</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_dashboard' %}" class="sidebar-nav-link">
+              <i data-feather="grid"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_my_events' %}" class="sidebar-nav-link">
+              <i data-feather="calendar"></i>
+              My Events
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_rewards' %}" class="sidebar-nav-link">
+              <i data-feather="star"></i>
+              Rewards
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_explore' %}" class="sidebar-nav-link active">
+              <i data-feather="compass"></i>
+              Explore
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Activity</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_history' %}" class="sidebar-nav-link">
+              <i data-feather="clock"></i>
+              History
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_feedback' %}" class="sidebar-nav-link">
+              <i data-feather="message-square"></i>
+              Feedback
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Account</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_profile' %}" class="sidebar-nav-link">
+              <i data-feather="user"></i>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_settings' %}" class="sidebar-nav-link">
+              <i data-feather="settings"></i>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:logout' %}" class="sidebar-nav-link" id="logout-link">
+              <i data-feather="log-out"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
     
-    <nav class="sidebar-nav">
-      <div class="sidebar-nav-title">Overview</div>
-      <ul class="sidebar-nav-links">
-        <li>
-          <a href="{% url 'base:participant_dashboard' %}" class="sidebar-nav-link">
-            <i data-feather="grid"></i>
-            Dashboard
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'base:participant_my_events' %}" class="sidebar-nav-link">
-            <i data-feather="calendar"></i>
-            My Events
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'base:participant_rewards' %}" class="sidebar-nav-link">
-            <i data-feather="star"></i>
-            Rewards
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'base:participant_explore' %}" class="sidebar-nav-link active">
-            <i data-feather="compass"></i>
-            Explore
-          </a>
-        </li>
-      </ul>
-      
-      <div class="sidebar-nav-title">Activity</div>
-      <ul class="sidebar-nav-links">
-        <li>
-          <a href="{% url 'base:participant_history' %}" class="sidebar-nav-link">
-            <i data-feather="clock"></i>
-            History
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'base:participant_feedback' %}" class="sidebar-nav-link">
-            <i data-feather="message-square"></i>
-            Feedback
-          </a>
-        </li>
-      </ul>
-      
-      <div class="sidebar-nav-title">Account</div>
-      <ul class="sidebar-nav-links">
-        <li>
-          <a href="{% url 'base:participant_profile' %}" class="sidebar-nav-link">
-            <i data-feather="user"></i>
-            Profile
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'base:participant_settings' %}" class="sidebar-nav-link">
-            <i data-feather="settings"></i>
-            Settings
-          </a>
-        </li>
-        <li>
-          <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
-            <i data-feather="log-out"></i>
-            Logout
-          </a>
-        </li>
-      </ul>
-    </nav>
-  </div>
-  
-  <!-- Main Content -->
-  <div class="dashboard-main">
-    <div class="dashboard-header">
-      <h1 class="dashboard-title">Explore Events</h1>
-    </div>
-
-    <!-- Search Section -->
-    <div class="search-section">
-      <form class="search-grid">
-        <input type="text" class="search-input" placeholder="Search by location">
-        <select class="search-select" title="Category">
-          <option value="">All Categories</option>
-          <option value="technology">Technology</option>
-          <option value="business">Business</option>
-          <option value="arts">Arts & Culture</option>
-          <option value="sports">Sports</option>
-        </select>
-        <select class="search-select" title="Date Range">
-          <option value="">Any Time</option>
-          <option value="today">Today</option>
-          <option value="tomorrow">Tomorrow</option>
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-        </select>
-      </form>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <button class="search-button">
-          <i data-feather="search"></i>
-          Search
-        </button>
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Explore Events</h1>
         <div class="view-toggle">
-          <button class="view-toggle-button active" data-view="grid" title="Grid View">
+          <button class="view-button active" title="Grid View">
             <i data-feather="grid"></i>
           </button>
-          <button class="view-toggle-button" data-view="list" title="List View">
+          <button class="view-button" title="List View">
             <i data-feather="list"></i>
           </button>
         </div>
       </div>
-    </div>
 
-    <!-- Events Grid -->
-    <div class="events-grid">
-      {% for event in upcoming_events %}
-      <div class="event-card">
-        {% if event.image %}
-        <img src="{{ event.image.url }}" alt="{{ event.title }}" class="event-image">
-        {% endif %}
-        <div class="event-content">
-          <h3 class="event-title">{{ event.title }}</h3>
-          <div class="event-details">
-            <div class="event-detail">
+      <!-- Search and Filters -->
+      <div class="explore-filters">
+        <div class="search-bar">
+          <input type="text" class="search-input" placeholder="Search events..." aria-label="Search events">
+        </div>
+        <div class="filter-group">
+          <select class="filter-select" aria-label="Event Category">
+            <option value="all">All Categories</option>
+            <option value="technology">Technology</option>
+            <option value="arts">Arts</option>
+            <option value="business">Business</option>
+            <option value="sports">Sports</option>
+          </select>
+          
+          <select class="filter-select" aria-label="Event Date">
+            <option value="all">Any Time</option>
+            <option value="today">Today</option>
+            <option value="tomorrow">Tomorrow</option>
+            <option value="week">This Week</option>
+            <option value="month">This Month</option>
+          </select>
+          
+          <select class="filter-select" aria-label="Event Price">
+            <option value="all">All Prices</option>
+            <option value="free">Free</option>
+            <option value="paid">Paid</option>
+          </select>
+
+          <select class="filter-select" aria-label="Event Location">
+            <option value="all">All Locations</option>
+            <option value="online">Online</option>
+            <option value="venue">Venue</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Event Grid -->
+      <div class="event-grid">
+        <!-- Event Card 1 -->
+        <div class="event-card">
+          <img src="https://source.unsplash.com/random/400x200/?technology" alt="Tech Summit" class="event-image">
+          <div class="event-content">
+            <div class="event-date">
               <i data-feather="calendar"></i>
-              {{ event.start_date|date:"F j, Y" }}
+              April 25, 2024
             </div>
-            <div class="event-detail">
-              <i data-feather="clock"></i>
-              {{ event.start_time|time:"g:i A" }}
+            <h3 class="event-title">Tech Summit 2024</h3>
+            <div class="event-tags">
+              <span class="event-tag">Technology</span>
+              <span class="event-tag">Conference</span>
             </div>
-            <div class="event-detail">
-              <i data-feather="map-pin"></i>
-              {{ event.location }}
+            <p class="event-description">
+              Join industry leaders and innovators for a day of inspiring talks, workshops, and networking opportunities.
+            </p>
+            <div class="event-footer">
+              <span class="event-price">$299</span>
+              <button class="register-button">Register Now</button>
             </div>
           </div>
-          <div class="event-footer">
-            <div class="event-price">
-              {% if event.price > 0 %}
-              ${{ event.price }}
-              {% else %}
-              Free
-              {% endif %}
+        </div>
+
+        <!-- Event Card 2 -->
+        <div class="event-card">
+          <img src="https://source.unsplash.com/random/400x200/?art" alt="Art Exhibition" class="event-image">
+          <div class="event-content">
+            <div class="event-date">
+              <i data-feather="calendar"></i>
+              May 1, 2024
             </div>
-            <form method="post" action="{% url 'base:register_event' event.id %}">
-              {% csrf_token %}
-              <button type="submit" class="register-button">Register</button>
-            </form>
+            <h3 class="event-title">Modern Art Exhibition</h3>
+            <div class="event-tags">
+              <span class="event-tag">Arts</span>
+              <span class="event-tag">Exhibition</span>
+            </div>
+            <p class="event-description">
+              Experience contemporary art from emerging artists in this unique exhibition featuring various mediums.
+            </p>
+            <div class="event-footer">
+              <span class="event-price">Free</span>
+              <button class="register-button">Register Now</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Card 3 -->
+        <div class="event-card">
+          <img src="https://source.unsplash.com/random/400x200/?business" alt="Business Workshop" class="event-image">
+          <div class="event-content">
+            <div class="event-date">
+              <i data-feather="calendar"></i>
+              May 10, 2024
+            </div>
+            <h3 class="event-title">Entrepreneurship Workshop</h3>
+            <div class="event-tags">
+              <span class="event-tag">Business</span>
+              <span class="event-tag">Workshop</span>
+            </div>
+            <p class="event-description">
+              Learn essential skills for starting and growing your business from successful entrepreneurs.
+            </p>
+            <div class="event-footer">
+              <span class="event-price">$149</span>
+              <button class="register-button">Register Now</button>
+            </div>
           </div>
         </div>
       </div>
-      {% empty %}
-      <p>No events found matching your criteria.</p>
-      {% endfor %}
     </div>
   </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script src="https://unpkg.com/feather-icons"></script>
-<script>
-  // Initialize Feather icons
-  feather.replace();
+  <script>
+    // Initialize Feather icons
+    feather.replace();
 
-  // View toggle functionality
-  const viewToggleButtons = document.querySelectorAll('.view-toggle-button');
-  const eventsContainer = document.querySelector('.events-grid');
-
-  viewToggleButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const view = button.dataset.view;
-      
-      // Update active state of buttons
-      viewToggleButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-      
-      // Update view class
-      eventsContainer.classList.remove('events-grid', 'events-list');
-      eventsContainer.classList.add(`events-${view}`);
+    // View toggle functionality
+    document.querySelectorAll('.view-button').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.view-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        const isGrid = button.title === 'Grid View';
+        const eventGrid = document.querySelector('.event-grid');
+        eventGrid.style.display = isGrid ? 'grid' : 'block';
+      });
     });
-  });
-</script>
-{% endblock %} 
+  </script>
+</body>
+</html> 

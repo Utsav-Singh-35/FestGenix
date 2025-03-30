@@ -1,0 +1,19 @@
+  <li>
+    <a href="{% url 'base:logout' %}" class="sidebar-nav-link" id="logout-link">
+      <i data-feather="log-out"></i>
+      Logout
+    </a>
+  </li>
+
+<script>
+  // Initialize Feather icons
+  feather.replace();
+
+  // Logout functionality
+  document.getElementById('logout-link').addEventListener('click', function(e) {
+    e.preventDefault();
+    if (confirm('Are you sure you want to logout?')) {
+      window.location.href = this.href;
+    }
+  });
+</script> 

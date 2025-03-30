@@ -1,166 +1,436 @@
-{% extends 'base/base.html' %}
-{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - EventAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #64748b;
+      --success: #22c55e;
+      --warning: #eab308;
+      --danger: #ef4444;
+      --dark-bg: #0f172a;
+      --dark-card: #1e293b;
+      --dark-border: #334155;
+      --dark-text: #e2e8f0;
+      --dark-text-secondary: #94a3b8;
+    }
 
-{% block title %}Settings - EventAI{% endblock %}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-{% block content %}
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <nav class="col-md-2 d-none d-md-block bg-dark sidebar min-vh-100">
-            <div class="sidebar-sticky">
-                <div class="text-center my-4">
-                    <h3 class="text-light">EventAI</h3>
-                </div>
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>OVERVIEW</span>
-                </h6>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_dashboard' %}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_my_events' %}">
-                            <i class="fas fa-calendar-alt"></i> My Events
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_rewards' %}">
-                            <i class="fas fa-star"></i> Rewards
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_explore' %}">
-                            <i class="fas fa-compass"></i> Explore
-                        </a>
-                    </li>
-                </ul>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+      line-height: 1.5;
+    }
 
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>ACTIVITY</span>
-                </h6>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_history' %}">
-                            <i class="fas fa-history"></i> History
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_feedback' %}">
-                            <i class="fas fa-comment"></i> Feedback
-                        </a>
-                    </li>
-                </ul>
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
 
-                <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                    <span>ACCOUNT</span>
-                </h6>
-                <ul class="nav flex-column">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:participant_profile' %}">
-                            <i class="fas fa-user"></i> Profile
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'base:participant_settings' %}">
-                            <i class="fas fa-cog"></i> Settings
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'base:logout' %}">
-                            <i class="fas fa-sign-out-alt"></i> Logout
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-card);
+      border-right: 1px solid var(--dark-border);
+      padding: 1.5rem;
+    }
 
-        <!-- Main content -->
-        <main role="main" class="col-md-10 ml-sm-auto px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1>Settings</h1>
-            </div>
+    .sidebar-header {
+      margin-bottom: 2rem;
+    }
 
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title">Notification Preferences</h5>
-                            <form method="post">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="email_notifications" name="email_notifications" {% if user.email_notifications %}checked{% endif %}>
-                                        <label class="custom-control-label" for="email_notifications">Email Notifications</label>
-                                    </div>
-                                    <small class="form-text text-muted">Receive event updates and reminders via email.</small>
-                                </div>
-                                <div class="form-group">
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="sms_notifications" name="sms_notifications" {% if user.sms_notifications %}checked{% endif %}>
-                                        <label class="custom-control-label" for="sms_notifications">SMS Notifications</label>
-                                    </div>
-                                    <small class="form-text text-muted">Receive event updates and reminders via SMS.</small>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save Preferences</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+    .sidebar-nav-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--dark-text-secondary);
+      margin: 1.5rem 0 0.75rem;
+      letter-spacing: 0.05em;
+    }
 
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">Change Password</h5>
-                            <form method="post">
-                                {% csrf_token %}
-                                <div class="form-group">
-                                    <label for="current_password">Current Password</label>
-                                    <input type="password" class="form-control" id="current_password" name="current_password" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="new_password">New Password</label>
-                                    <input type="password" class="form-control" id="new_password" name="new_password" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="confirm_password">Confirm New Password</label>
-                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Change Password</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-</div>
-{% endblock %}
+    .sidebar-nav-links {
+      list-style: none;
+    }
 
-{% block extra_js %}
-<script>
-    // Add password confirmation validation
-    document.getElementById('confirm_password').addEventListener('input', function() {
-        var newPassword = document.getElementById('new_password').value;
-        var confirmPassword = this.value;
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: var(--dark-text-secondary);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar-nav-link:hover {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+
+    .sidebar-nav-link.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .sidebar-nav-link i {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.75rem;
+    }
+
+    /* Main Content Styles */
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+    }
+
+    /* Settings Styles */
+    .settings-section {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-form {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--dark-text-secondary);
+    }
+
+    .form-input {
+      padding: 0.75rem 1rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.5rem;
+      color: var(--dark-text);
+      font-size: 0.875rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-select {
+      padding: 0.75rem 1rem;
+      background-color: var(--dark-bg);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.5rem;
+      color: var(--dark-text);
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 0.25rem;
+      border: 1px solid var(--dark-border);
+      background-color: var(--dark-bg);
+      cursor: pointer;
+    }
+
+    .form-checkbox label {
+      font-size: 0.875rem;
+      color: var(--dark-text-secondary);
+    }
+
+    .settings-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--dark-text);
+      border: 1px solid var(--dark-border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--dark-border);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--dark-border);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="{% url 'base:participant_dashboard' %}" class="sidebar-logo">EventAI</a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-title">Overview</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_dashboard' %}" class="sidebar-nav-link">
+              <i data-feather="grid"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_my_events' %}" class="sidebar-nav-link">
+              <i data-feather="calendar"></i>
+              My Events
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_rewards' %}" class="sidebar-nav-link">
+              <i data-feather="star"></i>
+              Rewards
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_explore' %}" class="sidebar-nav-link">
+              <i data-feather="compass"></i>
+              Explore
+            </a>
+          </li>
+        </ul>
         
-        if (newPassword !== confirmPassword) {
-            this.setCustomValidity('Passwords do not match');
-        } else {
-            this.setCustomValidity('');
-        }
-    });
-</script>
-{% endblock %} 
+        <div class="sidebar-nav-title">Activity</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_history' %}" class="sidebar-nav-link">
+              <i data-feather="clock"></i>
+              History
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_feedback' %}" class="sidebar-nav-link">
+              <i data-feather="message-square"></i>
+              Feedback
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Account</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_profile' %}" class="sidebar-nav-link">
+              <i data-feather="user"></i>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_settings' %}" class="sidebar-nav-link active">
+              <i data-feather="settings"></i>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:logout' %}" class="sidebar-nav-link" id="logout-link">
+              <i data-feather="log-out"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Settings</h1>
+      </div>
+      
+      <div class="settings-content">
+        <!-- Account Settings -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Account Settings</h2>
+          <form class="settings-form">
+            <div class="form-group">
+              <label class="form-label">Email Notifications</label>
+              <div class="form-checkbox">
+                <input type="checkbox" id="email-notifications" checked>
+                <label for="email-notifications">Receive email notifications about events and updates</label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Push Notifications</label>
+              <div class="form-checkbox">
+                <input type="checkbox" id="push-notifications" checked>
+                <label for="push-notifications">Receive push notifications on your device</label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Marketing Emails</label>
+              <div class="form-checkbox">
+                <input type="checkbox" id="marketing-emails">
+                <label for="marketing-emails">Receive marketing emails and promotions</label>
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Privacy Settings -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Privacy Settings</h2>
+          <form class="settings-form">
+            <div class="form-group">
+              <label class="form-label">Profile Visibility</label>
+              <select class="form-select">
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+                <option value="friends">Friends Only</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Event History</label>
+              <div class="form-checkbox">
+                <input type="checkbox" id="show-history" checked>
+                <label for="show-history">Show my event history on my profile</label>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Activity Status</label>
+              <div class="form-checkbox">
+                <input type="checkbox" id="show-status" checked>
+                <label for="show-status">Show when I'm attending events</label>
+              </div>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Language & Region -->
+        <div class="settings-section">
+          <h2 class="settings-section-title">Language & Region</h2>
+          <form class="settings-form">
+            <div class="form-group">
+              <label class="form-label">Language</label>
+              <select class="form-select">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Time Zone</label>
+              <select class="form-select">
+                <option value="utc">UTC</option>
+                <option value="est">Eastern Time</option>
+                <option value="pst">Pacific Time</option>
+                <option value="gmt">GMT</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Save Changes -->
+        <div class="settings-actions">
+          <button type="button" class="btn btn-secondary">Cancel</button>
+          <button type="button" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Initialize Feather icons
+    feather.replace();
+  </script>
+</body>
+</html> 
