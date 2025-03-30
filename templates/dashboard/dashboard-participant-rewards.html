@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rewards - EventAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #64748b;
+      --success: #22c55e;
+      --warning: #eab308;
+      --danger: #ef4444;
+      --dark-bg: #0f172a;
+      --dark-card: #1e293b;
+      --dark-border: #334155;
+      --dark-text: #e2e8f0;
+      --dark-text-secondary: #94a3b8;
+      --purple: #8b5cf6;
+      --blue: #3b82f6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+      line-height: 1.5;
+    }
+
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-card);
+      border-right: 1px solid var(--dark-border);
+      padding: 1.5rem;
+    }
+
+    .sidebar-header {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .sidebar-nav-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--dark-text-secondary);
+      margin: 1.5rem 0 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-nav-links {
+      list-style: none;
+    }
+
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: var(--dark-text-secondary);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar-nav-link:hover {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+
+    .sidebar-nav-link.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .sidebar-nav-link i {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.75rem;
+    }
+
+    /* Main Content Styles */
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    /* Stats Cards */
+    .dashboard-stat {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+
+    .dashboard-stat-header {
+      display: flex;
+      align-items: center;
+    }
+
+    .dashboard-stat-icon {
+      width: 3rem;
+      height: 3rem;
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+    }
+
+    .dashboard-stat-title {
+      color: var(--dark-text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .dashboard-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    /* Reward Cards */
+    .reward-card {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .reward-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .reward-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark-text);
+    }
+
+    .reward-points {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .reward-description {
+      color: var(--dark-text-secondary);
+      margin-bottom: 1rem;
+    }
+
+    .redeem-button {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .redeem-button:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .redeem-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Grid Utilities */
+    .grid-span-2 {
+      grid-column: span 2;
+    }
+
+    .grid-span-3 {
+      grid-column: span 3;
+    }
+
+    .grid-mt {
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--dark-border);
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-logo">EventAI</a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-title">Overview</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_dashboard' %}" class="sidebar-nav-link">
+              <i data-feather="grid"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_my_events' %}" class="sidebar-nav-link">
+              <i data-feather="calendar"></i>
+              My Events
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_rewards' %}" class="sidebar-nav-link active">
+              <i data-feather="star"></i>
+              Rewards
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_explore' %}" class="sidebar-nav-link">
+              <i data-feather="compass"></i>
+              Explore
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Activity</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_history' %}" class="sidebar-nav-link">
+              <i data-feather="clock"></i>
+              History
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_feedback' %}" class="sidebar-nav-link">
+              <i data-feather="message-square"></i>
+              Feedback
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Account</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_profile' %}" class="sidebar-nav-link">
+              <i data-feather="user"></i>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_settings' %}" class="sidebar-nav-link">
+              <i data-feather="settings"></i>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
+              <i data-feather="log-out"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">Rewards</h1>
+      </div>
+      
+      <!-- Quick Stats -->
+      <div class="dashboard-grid">
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-header">
+            <div class="dashboard-stat-icon">
+              <i data-feather="star"></i>
+            </div>
+            <div>
+              <div class="dashboard-stat-title">Total Points</div>
+              <div class="dashboard-stat-value">{{ total_points }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-header">
+            <div class="dashboard-stat-icon">
+              <i data-feather="gift"></i>
+            </div>
+            <div>
+              <div class="dashboard-stat-title">Available Points</div>
+              <div class="dashboard-stat-value">{{ available_points }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-header">
+            <div class="dashboard-stat-icon">
+              <i data-feather="award"></i>
+            </div>
+            <div>
+              <div class="dashboard-stat-title">Membership Level</div>
+              <div class="dashboard-stat-value">{{ membership_level }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Rewards -->
+      <div class="dashboard-grid grid-mt">
+        <div class="dashboard-card grid-span-3">
+          <div class="dashboard-card-header">
+            <h2 class="dashboard-card-title">Available Rewards</h2>
+          </div>
+          {% if available_rewards %}
+          <div class="dashboard-grid">
+            {% for reward in available_rewards %}
+            <div class="reward-card">
+              <div class="reward-header">
+                <h3 class="reward-title">{{ reward.name }}</h3>
+                <span class="reward-points">{{ reward.points_required }} pts</span>
+              </div>
+              <p class="reward-description">{{ reward.description }}</p>
+              <form method="post" action="{% url 'base:redeem_reward' reward.id %}">
+                {% csrf_token %}
+                <button type="submit" class="redeem-button" {% if available_points < reward.points_required %}disabled{% endif %}>
+                  <i data-feather="gift"></i>
+                  Redeem
+                </button>
+              </form>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted">No rewards available at the moment.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Feather icons
+    feather.replace();
+  </script>
+</body>
+</html> 

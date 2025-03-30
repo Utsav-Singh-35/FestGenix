@@ -1,0 +1,413 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-logo">EventAI</a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-title">Overview</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="grid"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="calendar"></i>
+                        Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="users"></i>
+                        Team
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link active">
+                        <i data-feather="dollar-sign"></i>
+                        Budget
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Analytics</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="bar-chart-2"></i>
+                        Reports
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="pie-chart"></i>
+                        Attendance
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Account</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="settings"></i>
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
+                        <i data-feather="log-out"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-main">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Budget Management</h1>
+            <button class="budget-button" title="Add new expense" aria-label="Add new expense">
+                <i data-feather="plus"></i>
+                Add Expense
+            </button>
+        </div>
+
+        <!-- Budget Overview -->
+        <div class="budget-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="dollar-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Budget</h3>
+                    <p>$50,000</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="trending-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Amount Spent</h3>
+                    <p>$32,500</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="trending-down"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Remaining</h3>
+                    <p>$17,500</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Budget Charts -->
+        <div class="charts-grid">
+            <!-- Budget Allocation -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2>Budget Allocation</h2>
+                    <select class="time-select" title="Time period" aria-label="Select time period">
+                        <option>Last 30 days</option>
+                        <option>Last 60 days</option>
+                        <option>Last 90 days</option>
+                    </select>
+                </div>
+                <canvas id="budgetAllocationChart"></canvas>
+            </div>
+
+            <!-- Expense Trends -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2>Expense Trends</h2>
+                </div>
+                <canvas id="expenseTrendsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Expenses Table -->
+        <div class="expenses-table-container">
+            <div class="table-header">
+                <h2>Recent Expenses</h2>
+                <div class="table-actions">
+                    <select class="filter-select" title="Filter expenses" aria-label="Filter expenses">
+                        <option>All Expenses</option>
+                        <option>This Month</option>
+                        <option>Last Month</option>
+                    </select>
+                    <button class="export-button" title="Export expenses" aria-label="Export expenses">
+                        <i data-feather="download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+            <table class="expenses-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Venue Rental</td>
+                        <td>Venue</td>
+                        <td>Mar 15, 2024</td>
+                        <td>$5,000</td>
+                        <td><span class="status-badge paid">Paid</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon" title="Edit expense" aria-label="Edit expense">
+                                    <i data-feather="edit"></i>
+                                </button>
+                                <button class="btn-icon" title="View details" aria-label="View details">
+                                    <i data-feather="eye"></i>
+                                </button>
+                                <button class="btn-icon" title="Delete expense" aria-label="Delete expense">
+                                    <i data-feather="trash-2"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Add more expenses here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .budget-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .budget-button {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .budget-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .budget-button i {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+    .charts-grid {
+            display: grid;
+        grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+    .chart-container {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+    .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+    .time-select,
+    .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--dark-border);
+            border-radius: 0.5rem;
+        background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+    .expenses-table-container {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+    .table-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .expenses-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+    .expenses-table th,
+    .expenses-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+    .expenses-table th {
+            font-weight: 600;
+        color: var(--dark-text-secondary);
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-badge.paid {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--success);
+    }
+
+    .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+    .btn-icon {
+            width: 2rem;
+            height: 2rem;
+        border: none;
+            border-radius: 0.5rem;
+        background-color: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+        cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+        background-color: var(--primary);
+        color: white;
+    }
+
+        @media (max-width: 1024px) {
+        .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+    // Initialize Budget Allocation Chart
+    const allocationCtx = document.getElementById('budgetAllocationChart').getContext('2d');
+    new Chart(allocationCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Venue', 'Catering', 'Entertainment', 'Marketing', 'Staff', 'Other'],
+            datasets: [{
+                data: [30, 25, 15, 15, 10, 5],
+                backgroundColor: [
+                    '#6366f1',
+                    '#22c55e',
+                    '#eab308',
+                    '#f97316',
+                    '#8b5cf6',
+                    '#64748b'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#e2e8f0'
+                    }
+                }
+            }
+        }
+    });
+
+    // Initialize Expense Trends Chart
+    const trendsCtx = document.getElementById('expenseTrendsChart').getContext('2d');
+    new Chart(trendsCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Expenses',
+                data: [8000, 12000, 9500, 15000, 13000, 18000],
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                    display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                        callback: value => '$' + value
+                    }
+                }
+            }
+        }
+    });
+
+    // Add Expense button functionality
+    document.querySelector('.budget-button').addEventListener('click', function() {
+        // Add expense logic here
+        alert('Add expense functionality will be implemented here');
+        });
+    </script>
+{% endblock %} 

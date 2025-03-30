@@ -1,0 +1,385 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-logo">EventAI</a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-title">Overview</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="grid"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="calendar"></i>
+                        Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="users"></i>
+                        Team
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="dollar-sign"></i>
+                        Budget
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Analytics</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="bar-chart-2"></i>
+                        Reports
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link active">
+                        <i data-feather="pie-chart"></i>
+                        Attendance
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Account</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="settings"></i>
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
+                        <i data-feather="log-out"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-main">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Attendance Analytics</h1>
+            <button class="attendance-button" title="Export attendance data" aria-label="Export attendance data">
+                <i data-feather="download"></i>
+                Export Data
+            </button>
+        </div>
+
+        <!-- Attendance Overview -->
+        <div class="attendance-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Attendees</h3>
+                    <p>1,248</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Average Attendance</h3>
+                    <p>87%</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="trending-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Growth Rate</h3>
+                    <p>+12.5%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Charts -->
+        <div class="charts-grid">
+            <!-- Attendance Trend -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2>Attendance Trend</h2>
+                    <select class="time-select" title="Time period" aria-label="Select time period">
+                        <option>Last 30 days</option>
+                        <option>Last 60 days</option>
+                        <option>Last 90 days</option>
+                    </select>
+                </div>
+                <canvas id="attendanceTrendChart"></canvas>
+            </div>
+
+            <!-- Demographics -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2>Demographics</h2>
+                </div>
+                <canvas id="demographicsChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Event Attendance Table -->
+        <div class="attendance-table-container">
+            <div class="table-header">
+                <h2>Event Attendance</h2>
+                <div class="table-actions">
+                    <select class="filter-select" title="Filter events" aria-label="Filter events">
+                        <option>All Events</option>
+                        <option>Upcoming Events</option>
+                        <option>Past Events</option>
+                    </select>
+                    <button class="export-button" title="Export table" aria-label="Export table">
+                        <i data-feather="download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+            <table class="attendance-table">
+                <thead>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Date</th>
+                        <th>Total Capacity</th>
+                        <th>Registered</th>
+                        <th>Attended</th>
+                        <th>Attendance Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Tech Conference 2024</td>
+                        <td>Apr 15, 2024</td>
+                        <td>300</td>
+                        <td>285</td>
+                        <td>250</td>
+                        <td>
+                            <div class="attendance-rate">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 83%"></div>
+                                </div>
+                                <span>83%</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Add more events here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .attendance-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .attendance-button {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .attendance-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .attendance-button i {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+    .charts-grid {
+            display: grid;
+        grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+    .chart-container {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+    .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+    .time-select,
+    .filter-select {
+            padding: 0.5rem;
+            border: 1px solid var(--dark-border);
+            border-radius: 0.5rem;
+        background-color: var(--dark-bg);
+            color: var(--dark-text);
+        }
+
+        .attendance-table-container {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--dark-border);
+    }
+
+    .table-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        }
+
+        .attendance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .attendance-table th,
+        .attendance-table td {
+        padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .attendance-table th {
+            font-weight: 600;
+        color: var(--dark-text-secondary);
+    }
+
+    .attendance-rate {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .progress-bar {
+        flex: 1;
+        height: 0.5rem;
+        background-color: var(--dark-border);
+            border-radius: 9999px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background-color: var(--primary);
+        border-radius: 9999px;
+    }
+
+        @media (max-width: 1024px) {
+        .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+    // Initialize Attendance Trend Chart
+    const trendCtx = document.getElementById('attendanceTrendChart').getContext('2d');
+    new Chart(trendCtx, {
+            type: 'line',
+            data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Attendance Rate',
+                data: [75, 82, 78, 85, 80, 87],
+                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                    display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    max: 100,
+                        ticks: {
+                        callback: value => value + '%'
+                    }
+                }
+            }
+        }
+    });
+
+    // Initialize Demographics Chart
+    const demoCtx = document.getElementById('demographicsChart').getContext('2d');
+    new Chart(demoCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Students', 'Professionals', 'Entrepreneurs', 'Others'],
+            datasets: [{
+                data: [45, 30, 15, 10],
+                backgroundColor: [
+                    '#6366f1',
+                    '#22c55e',
+                    '#eab308',
+                    '#64748b'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#e2e8f0'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %} 

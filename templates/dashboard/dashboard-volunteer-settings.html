@@ -1,0 +1,447 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>EventAI</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'base:volunteer_dashboard' %}">
+                        <i data-feather="home"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:volunteer_events' %}">
+                        <i data-feather="calendar"></i> Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:volunteer_tasks' %}">
+                        <i data-feather="check-square"></i> Tasks
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:volunteer_settings' %}" class="active">
+                        <i data-feather="settings"></i> Settings
+                    </a>
+                </li>
+                <li class="logout-item">
+                    <a href="{% url 'base:logout' %}" class="logout-link">
+                        <i data-feather="log-out"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="dashboard-header">
+            <h1>Settings</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" type="submit" form="settings-form">
+                    <i data-feather="save"></i> Save Changes
+                </button>
+            </div>
+        </header>
+
+        <form id="settings-form" method="POST">
+            {% csrf_token %}
+            <!-- Profile Settings -->
+            <section class="dashboard-section">
+                <h2>Profile Settings</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" class="form-input" value="{{ volunteer.full_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" class="form-input" value="{{ volunteer.email }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" value="{{ volunteer.phone }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" name="location" class="form-input" value="{{ volunteer.location }}" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Skills & Interests -->
+            <section class="dashboard-section">
+                <h2>Skills & Interests</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="skills">Skills</label>
+                        <select id="skills" name="skills" class="form-select" multiple aria-label="Select your skills">
+                            {% for skill in available_skills %}
+                            <option value="{{ skill.id }}" {% if skill in volunteer.skills.all %}selected{% endif %}>
+                                {{ skill.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <p class="help-text">Hold Ctrl (Cmd on Mac) to select multiple skills</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="interests">Areas of Interest</label>
+                        <select id="interests" name="interests" class="form-select" multiple aria-label="Select your interests">
+                            {% for interest in available_interests %}
+                            <option value="{{ interest.id }}" {% if interest in volunteer.interests.all %}selected{% endif %}>
+                                {{ interest.name }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <p class="help-text">Hold Ctrl (Cmd on Mac) to select multiple interests</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Availability -->
+            <section class="dashboard-section">
+                <h2>Availability</h2>
+                <div class="settings-grid">
+                    <div class="form-group checkbox-group">
+                        <label>Preferred Days</label>
+                        <div class="checkbox-list">
+                            {% for day in days_of_week %}
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="available_days" value="{{ day.value }}" class="form-checkbox" 
+                                    {% if day.value in volunteer.available_days %}checked{% endif %}>
+                                <span>{{ day.label }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="time_preference">Time Preference</label>
+                        <select id="time_preference" name="time_preference" class="form-select" aria-label="Select your preferred time">
+                            <option value="morning" {% if volunteer.time_preference == 'morning' %}selected{% endif %}>Morning</option>
+                            <option value="afternoon" {% if volunteer.time_preference == 'afternoon' %}selected{% endif %}>Afternoon</option>
+                            <option value="evening" {% if volunteer.time_preference == 'evening' %}selected{% endif %}>Evening</option>
+                            <option value="flexible" {% if volunteer.time_preference == 'flexible' %}selected{% endif %}>Flexible</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications -->
+            <section class="dashboard-section">
+                <h2>Notifications</h2>
+                <div class="settings-grid">
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="email_notifications" name="email_notifications" class="form-checkbox" 
+                            {% if volunteer.email_notifications %}checked{% endif %}>
+                        <label for="email_notifications">Email Notifications</label>
+                        <p class="help-text">Receive email notifications about new events and task updates.</p>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="sms_notifications" name="sms_notifications" class="form-checkbox"
+                            {% if volunteer.sms_notifications %}checked{% endif %}>
+                        <label for="sms_notifications">SMS Notifications</label>
+                        <p class="help-text">Receive SMS notifications for important updates and reminders.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Password & Security -->
+            <section class="dashboard-section">
+                <h2>Password & Security</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="current_password">Current Password</label>
+                        <input type="password" id="current_password" name="current_password" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-input">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appearance -->
+            <section class="dashboard-section">
+                <h2>Appearance</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="theme">Theme</label>
+                        <select id="theme" name="theme" class="form-select" aria-label="Select theme">
+                            <option value="dark" selected>Dark Theme</option>
+                            <option value="light">Light Theme</option>
+                            <option value="system">System Default</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+        </form>
+    </main>
+</div>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #64748b;
+        --success: #22c55e;
+        --warning: #eab308;
+        --danger: #ef4444;
+        --dark-bg: #0f172a;
+        --dark-card: #1e293b;
+        --dark-border: #334155;
+        --dark-text: #e2e8f0;
+        --dark-text-secondary: #94a3b8;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        line-height: 1.5;
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        background-color: var(--dark-card);
+        border-right: 1px solid var(--dark-border);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-header h2 {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .sidebar-nav ul {
+        list-style: none;
+    }
+
+    .sidebar-nav li {
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--dark-text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        gap: 0.75rem;
+    }
+
+    .sidebar-nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--dark-text);
+    }
+
+    .sidebar-nav a.active {
+        background-color: var(--primary);
+        color: #fff;
+    }
+
+    .sidebar-nav i {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .logout-item {
+        margin-top: auto;
+    }
+
+    .logout-link {
+        color: var(--danger) !important;
+    }
+
+    .logout-link:hover {
+        background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.875rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+
+    /* Dashboard Sections */
+    .dashboard-section {
+        background-color: var(--dark-card);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-section h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Settings Grid */
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--dark-text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        border: 1px solid var(--dark-border);
+        border-radius: 0.5rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.875rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .form-select {
+        padding-right: 2rem;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e2e8f0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1.25rem;
+        cursor: pointer;
+    }
+
+    .form-select[multiple] {
+        padding-right: 0.75rem;
+        background-image: none;
+        min-height: 120px;
+    }
+
+    /* Checkbox Styles */
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .checkbox-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.5rem;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+    }
+
+    .form-checkbox {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 0.25rem;
+        border: 1px solid var(--dark-border);
+        background-color: var(--dark-bg);
+        cursor: pointer;
+    }
+
+    .form-checkbox:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .help-text {
+        color: var(--dark-text-secondary);
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+</style>
+
+{% block extra_js %}
+<script>
+    // Initialize Feather Icons
+    feather.replace();
+</script>
+{% endblock %}
+
+{% endblock %} 

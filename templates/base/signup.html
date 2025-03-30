@@ -1,0 +1,109 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+<div class="login-container">
+    <!-- Floating Geometric Shapes -->
+    <div class="floating-shapes" id="floatingShapes"></div>
+
+    <div class="login-card">
+        <div class="login-header">
+            <h1>Create Account</h1>
+            <p>Join FestGenix to explore amazing events</p>
+        </div>
+
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form class="login-form" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_full_name">Full Name</label>
+                {{ form.full_name }}
+            </div>
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                {{ form.email }}
+            </div>
+            <div class="form-group">
+                <label for="id_role">I want to join as</label>
+                {{ form.role }}
+            </div>
+            <div class="form-group">
+                <label for="id_password1">Password</label>
+                {{ form.password1 }}
+            </div>
+            <div class="form-group">
+                <label for="id_password2">Confirm Password</label>
+                {{ form.password2 }}
+            </div>
+            <div class="form-group terms-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" required>
+                    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                </label>
+            </div>
+            <button type="submit" class="login-btn">Create Account</button>
+        </form>
+        <div class="login-footer">
+            <p>Already have an account? <a href="{% url 'base:login' %}">Sign in</a></p>
+        </div>
+    </div>
+</div>
+
+<script>
+// Function to create and animate floating shapes
+function createFloatingShape() {
+    const shapes = document.getElementById('floatingShapes');
+    const shape = document.createElement('div');
+    
+    // Randomly choose between circle and ring
+    const isCircle = Math.random() > 0.5;
+    shape.className = `shape ${isCircle ? 'circle' : 'ring'}`;
+    
+    // Random size between 20 and 80
+    const size = Math.random() * 80 + 80;
+    shape.style.setProperty('--size', `${size}px`);
+    
+    // Random position
+    const x = Math.random() * 100;
+    shape.style.setProperty('--x', `${x}%`);
+    
+    // Random duration between 8 and 15 seconds
+    const duration = Math.random() * 7 + 7;
+    shape.style.setProperty('--duration', `${duration}s`);
+    
+    shapes.appendChild(shape);
+    
+    // Remove shape after animation
+    setTimeout(() => {
+        shape.remove();
+    }, duration * 1000);
+}
+
+// Create initial shapes
+for (let i = 0; i < 20; i++) {
+    setTimeout(createFloatingShape, Math.random() * 400);
+}
+
+// Continue creating shapes
+setInterval(createFloatingShape, 100);
+
+// Add custom styling for the role select
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role-select');
+    if (roleSelect) {
+        roleSelect.addEventListener('change', function() {
+            this.classList.add('selected');
+        });
+    }
+});
+</script>
+{% endblock %}

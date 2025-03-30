@@ -1,0 +1,522 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>EventAI</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'base:sponsor_dashboard' %}">
+                        <i data-feather="home"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_sponsorship' %}">
+                        <i data-feather="award"></i> Sponsorship
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_analytics' %}" class="active">
+                        <i data-feather="bar-chart-2"></i> Analytics
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_settings' %}">
+                        <i data-feather="settings"></i> Settings
+                    </a>
+                </li>
+                <li class="logout-item">
+                    <a href="{% url 'base:logout' %}" class="logout-link">
+                        <i data-feather="log-out"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="dashboard-header">
+            <h1>Analytics</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="exportAnalytics()">
+                    <i data-feather="download"></i> Export Report
+                </button>
+            </div>
+        </header>
+
+        <!-- Analytics Overview -->
+        <section class="dashboard-section">
+            <h2>Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-feather="calendar"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Events</h3>
+                        <p class="stat-value">{{ total_events }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-feather="users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Attendees</h3>
+                        <p class="stat-value">{{ total_attendees }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-feather="dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Investment</h3>
+                        <p class="stat-value">${{ total_investment }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-feather="trending-up"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Overall ROI</h3>
+                        <p class="stat-value">{{ roi_data.overall_roi|floatformat:2 }}%</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ROI Trends -->
+        <section class="dashboard-section">
+            <div class="section-header">
+                <h2>ROI Trends</h2>
+                <div class="section-actions">
+                    <select class="form-select" aria-label="Select time range">
+                        <option value="6">Last 6 Months</option>
+                        <option value="12">Last 12 Months</option>
+                        <option value="24">Last 24 Months</option>
+                    </select>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="roiTrendChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Event Performance -->
+        <section class="dashboard-section">
+            <h2>Event Performance</h2>
+            <div class="performance-grid">
+                {% for type, roi in roi_data.event_type_roi.items %}
+                <div class="performance-card">
+                    <h3>{{ type|title }}</h3>
+                    <p class="performance-value {% if roi > 0 %}positive{% else %}negative{% endif %}">
+                        {{ roi|floatformat:2 }}%
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Top Events -->
+        <section class="dashboard-section">
+            <h2>Top Performing Events</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Investment</th>
+                            <th>ROI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in roi_data.top_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.date|date:"M d, Y" }}</td>
+                            <td>${{ event.investment }}</td>
+                            <td class="{% if event.roi > 0 %}positive{% else %}negative{% endif %}">
+                                {{ event.roi }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #64748b;
+        --success: #22c55e;
+        --warning: #eab308;
+        --danger: #ef4444;
+        --dark-bg: #0f172a;
+        --dark-card: #1e293b;
+        --dark-border: #334155;
+        --dark-text: #e2e8f0;
+        --dark-text-secondary: #94a3b8;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        line-height: 1.5;
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        background-color: var(--dark-card);
+        border-right: 1px solid var(--dark-border);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-header h2 {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .sidebar-nav ul {
+        list-style: none;
+    }
+
+    .sidebar-nav li {
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--dark-text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        gap: 0.75rem;
+    }
+
+    .sidebar-nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--dark-text);
+    }
+
+    .sidebar-nav a.active {
+        background-color: var(--primary);
+        color: #fff;
+    }
+
+    .sidebar-nav i {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .logout-item {
+        margin-top: auto;
+    }
+
+    .logout-link {
+        color: var(--danger) !important;
+    }
+
+    .logout-link:hover {
+        background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.875rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+
+    /* Dashboard Sections */
+    .dashboard-section {
+        background-color: var(--dark-card);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-section h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .stat-card {
+        background-color: var(--dark-bg);
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        padding: 0.75rem;
+        background-color: rgba(99, 102, 241, 0.1);
+        border-radius: 0.5rem;
+        color: var(--primary);
+    }
+
+    .stat-content h3 {
+        color: var(--dark-text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    /* Chart Styles */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .form-select {
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        border: 1px solid var(--dark-border);
+        padding: 0.5rem 2rem 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e2e8f0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1.25rem;
+        cursor: pointer;
+    }
+
+    .chart-container {
+        background-color: var(--dark-bg);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        height: 300px;
+    }
+
+    /* Performance Grid */
+    .performance-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .performance-card {
+        background-color: var(--dark-bg);
+        padding: 1.25rem;
+        border-radius: 0.75rem;
+        text-align: center;
+    }
+
+    .performance-card h3 {
+        color: var(--dark-text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .performance-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+    }
+
+    .performance-value.positive {
+        color: var(--success);
+    }
+
+    .performance-value.negative {
+        color: var(--danger);
+    }
+
+    /* Table Styles */
+    .table-container {
+        background-color: var(--dark-bg);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    th, td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid var(--dark-border);
+    }
+
+    th {
+        background-color: var(--dark-bg);
+        color: var(--dark-text-secondary);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    td {
+        font-size: 0.875rem;
+    }
+
+    td.positive {
+        color: var(--success);
+    }
+
+    td.negative {
+        color: var(--danger);
+    }
+
+    tr:hover td {
+        background-color: rgba(255, 255, 255, 0.02);
+    }
+</style>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Initialize Feather Icons
+    feather.replace();
+
+    // ROI Trend Chart
+    const roiData = {{ roi_data.monthly_trend|safe }};
+    const ctx = document.getElementById('roiTrendChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: roiData.map(item => item.month),
+            datasets: [{
+                label: 'ROI %',
+                data: roiData.map(item => item.roi),
+                borderColor: 'rgb(99, 102, 241)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                tension: 0.4,
+                fill: true,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    function exportAnalytics() {
+        alert('Exporting analytics report...');
+    }
+</script>
+{% endblock %}
+
+{% endblock %} 

@@ -1,0 +1,377 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>EventAI</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'base:sponsor_dashboard' %}">
+                        <i data-feather="home"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_sponsorship' %}">
+                        <i data-feather="award"></i> Sponsorship
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_analytics' %}">
+                        <i data-feather="bar-chart-2"></i> Analytics
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_settings' %}" class="active">
+                        <i data-feather="settings"></i> Settings
+                    </a>
+                </li>
+                <li class="logout-item">
+                    <a href="{% url 'base:logout' %}" class="logout-link">
+                        <i data-feather="log-out"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="dashboard-header">
+            <h1>Settings</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary" type="submit" form="settings-form">
+                    <i data-feather="save"></i> Save Changes
+                </button>
+            </div>
+        </header>
+
+        <form id="settings-form" method="POST">
+            {% csrf_token %}
+            <!-- Profile Settings -->
+            <section class="dashboard-section">
+                <h2>Profile Settings</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="company_name">Company Name</label>
+                        <input type="text" id="company_name" name="company_name" class="form-input" value="{{ sponsor.company_name }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="website">Website</label>
+                        <input type="url" id="website" name="website" class="form-input" value="{{ sponsor.website }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="industry">Industry</label>
+                        <input type="text" id="industry" name="industry" class="form-input" value="{{ sponsor.industry }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_email">Contact Email</label>
+                        <input type="email" id="contact_email" name="contact_email" class="form-input" value="{{ sponsor.contact_email }}" required>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Password & Security -->
+            <section class="dashboard-section">
+                <h2>Password & Security</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="current_password">Current Password</label>
+                        <input type="password" id="current_password" name="current_password" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-input">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Notifications -->
+            <section class="dashboard-section">
+                <h2>Notifications</h2>
+                <div class="settings-grid">
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="email_notifications" name="email_notifications" class="form-checkbox" {% if sponsor.email_notifications %}checked{% endif %}>
+                        <label for="email_notifications">Email Notifications</label>
+                        <p class="help-text">Receive email notifications about sponsorship updates and new opportunities.</p>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="marketing_emails" name="marketing_emails" class="form-checkbox" {% if sponsor.marketing_emails %}checked{% endif %}>
+                        <label for="marketing_emails">Marketing Emails</label>
+                        <p class="help-text">Receive promotional emails about new features and events.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Appearance -->
+            <section class="dashboard-section">
+                <h2>Appearance</h2>
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="theme">Theme</label>
+                        <select id="theme" name="theme" class="form-select" aria-label="Select theme">
+                            <option value="dark" selected>Dark Theme</option>
+                            <option value="light">Light Theme</option>
+                            <option value="system">System Default</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+        </form>
+    </main>
+</div>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #64748b;
+        --success: #22c55e;
+        --warning: #eab308;
+        --danger: #ef4444;
+        --dark-bg: #0f172a;
+        --dark-card: #1e293b;
+        --dark-border: #334155;
+        --dark-text: #e2e8f0;
+        --dark-text-secondary: #94a3b8;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        line-height: 1.5;
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        background-color: var(--dark-card);
+        border-right: 1px solid var(--dark-border);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-header h2 {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .sidebar-nav ul {
+        list-style: none;
+    }
+
+    .sidebar-nav li {
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--dark-text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        gap: 0.75rem;
+    }
+
+    .sidebar-nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--dark-text);
+    }
+
+    .sidebar-nav a.active {
+        background-color: var(--primary);
+        color: #fff;
+    }
+
+    .sidebar-nav i {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .logout-item {
+        margin-top: auto;
+    }
+
+    .logout-link {
+        color: var(--danger) !important;
+    }
+
+    .logout-link:hover {
+        background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.875rem;
+        font-weight: 600;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+
+    /* Dashboard Sections */
+    .dashboard-section {
+        background-color: var(--dark-card);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-section h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Settings Grid */
+    .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* Form Styles */
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: var(--dark-text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input,
+    .form-select {
+        width: 100%;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        border: 1px solid var(--dark-border);
+        border-radius: 0.5rem;
+        padding: 0.625rem 0.75rem;
+        font-size: 0.875rem;
+        transition: border-color 0.2s;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: var(--primary);
+    }
+
+    .form-select {
+        padding-right: 2rem;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23e2e8f0'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1.25rem;
+        cursor: pointer;
+    }
+
+    /* Checkbox Styles */
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .form-checkbox {
+        width: 1rem;
+        height: 1rem;
+        border-radius: 0.25rem;
+        border: 1px solid var(--dark-border);
+        background-color: var(--dark-bg);
+        cursor: pointer;
+    }
+
+    .form-checkbox:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .help-text {
+        color: var(--dark-text-secondary);
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+</style>
+
+{% block extra_js %}
+<script>
+    // Initialize Feather Icons
+    feather.replace();
+</script>
+{% endblock %}
+
+{% endblock %} 

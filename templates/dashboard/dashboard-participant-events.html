@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Events - EventAI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #64748b;
+      --success: #22c55e;
+      --warning: #eab308;
+      --danger: #ef4444;
+      --dark-bg: #0f172a;
+      --dark-card: #1e293b;
+      --dark-border: #334155;
+      --dark-text: #e2e8f0;
+      --dark-text-secondary: #94a3b8;
+      --purple: #8b5cf6;
+      --blue: #3b82f6;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+      line-height: 1.5;
+    }
+
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-card);
+      border-right: 1px solid var(--dark-border);
+      padding: 1.5rem;
+    }
+
+    .sidebar-header {
+      margin-bottom: 2rem;
+    }
+
+    .sidebar-logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .sidebar-nav-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--dark-text-secondary);
+      margin: 1.5rem 0 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    .sidebar-nav-links {
+      list-style: none;
+    }
+
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      color: var(--dark-text-secondary);
+      text-decoration: none;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      transition: all 0.2s;
+    }
+
+    .sidebar-nav-link:hover {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+
+    .sidebar-nav-link.active {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .sidebar-nav-link i {
+      width: 1.25rem;
+      height: 1.25rem;
+      margin-right: 0.75rem;
+    }
+
+    /* Main Content Styles */
+    .dashboard-main {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .dashboard-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    /* Stats Cards */
+    .dashboard-stat {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+    }
+
+    .dashboard-stat-header {
+      display: flex;
+      align-items: center;
+    }
+
+    .dashboard-stat-icon {
+      width: 3rem;
+      height: 3rem;
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+    }
+
+    .dashboard-stat-title {
+      color: var(--dark-text-secondary);
+      font-size: 0.875rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .dashboard-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    /* Event Cards */
+    .event-card {
+      background-color: var(--dark-card);
+      border: 1px solid var(--dark-border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .event-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--dark-text);
+    }
+
+    .event-status {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+    }
+
+    .status-confirmed {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: var(--success);
+    }
+
+    .status-pending {
+      background-color: rgba(234, 179, 8, 0.1);
+      color: var(--warning);
+    }
+
+    .event-details {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      color: var(--dark-text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .event-detail {
+      display: flex;
+      align-items: center;
+    }
+
+    .event-detail i {
+      width: 1rem;
+      height: 1rem;
+      margin-right: 0.5rem;
+    }
+
+    .event-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .event-tags {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .event-tag {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+    }
+
+    .tag-technology {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: var(--blue);
+    }
+
+    .tag-arts {
+      background-color: rgba(139, 92, 246, 0.1);
+      color: var(--purple);
+    }
+
+    .tag-business {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+    }
+
+    .event-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* Grid Utilities */
+    .grid-span-2 {
+      grid-column: span 2;
+    }
+
+    .grid-span-3 {
+      grid-column: span 3;
+    }
+
+    .grid-mt {
+      margin-top: 1.5rem;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--dark-border);
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-logo">EventAI</a>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <div class="sidebar-nav-title">Overview</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_dashboard' %}" class="sidebar-nav-link">
+              <i data-feather="grid"></i>
+              Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_my_events' %}" class="sidebar-nav-link active">
+              <i data-feather="calendar"></i>
+              My Events
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_rewards' %}" class="sidebar-nav-link">
+              <i data-feather="star"></i>
+              Rewards
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_explore' %}" class="sidebar-nav-link">
+              <i data-feather="compass"></i>
+              Explore
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Activity</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_history' %}" class="sidebar-nav-link">
+              <i data-feather="clock"></i>
+              History
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_feedback' %}" class="sidebar-nav-link">
+              <i data-feather="message-square"></i>
+              Feedback
+            </a>
+          </li>
+        </ul>
+        
+        <div class="sidebar-nav-title">Account</div>
+        <ul class="sidebar-nav-links">
+          <li>
+            <a href="{% url 'base:participant_profile' %}" class="sidebar-nav-link">
+              <i data-feather="user"></i>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:participant_settings' %}" class="sidebar-nav-link">
+              <i data-feather="settings"></i>
+              Settings
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
+              <i data-feather="log-out"></i>
+              Logout
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title">My Events</h1>
+      </div>
+      
+      <!-- Quick Stats -->
+      <div class="dashboard-grid">
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-header">
+            <div class="dashboard-stat-icon">
+              <i data-feather="calendar"></i>
+            </div>
+            <div>
+              <div class="dashboard-stat-title">Total Events</div>
+              <div class="dashboard-stat-value">{{ total_events }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-header">
+            <div class="dashboard-stat-icon">
+              <i data-feather="clock"></i>
+            </div>
+            <div>
+              <div class="dashboard-stat-title">Upcoming Events</div>
+              <div class="dashboard-stat-value">{{ upcoming_events }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="dashboard-stat">
+          <div class="dashboard-stat-header">
+            <div class="dashboard-stat-icon">
+              <i data-feather="check-circle"></i>
+            </div>
+            <div>
+              <div class="dashboard-stat-title">Completed Events</div>
+              <div class="dashboard-stat-value">{{ completed_events }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Events List -->
+      <div class="dashboard-grid grid-mt">
+        <div class="dashboard-card grid-span-3">
+          <div class="dashboard-card-header">
+            <h2 class="dashboard-card-title">Registered Events</h2>
+          </div>
+          {% if events %}
+          <div class="events-list">
+            {% for event in events %}
+            <div class="event-card">
+              <div class="event-header">
+                <h3 class="event-title">{{ event.name }}</h3>
+                <div class="event-status {% if event.status == 'Confirmed' %}status-confirmed{% else %}status-pending{% endif %}">
+                  {{ event.status }}
+                </div>
+              </div>
+              <div class="event-details">
+                <div class="event-detail">
+                  <i data-feather="calendar"></i>
+                  {{ event.date }}
+                </div>
+                <div class="event-detail">
+                  <i data-feather="map-pin"></i>
+                  {{ event.location }}
+                </div>
+                <div class="event-detail">
+                  <i data-feather="clock"></i>
+                  {{ event.time }}
+                </div>
+              </div>
+              <div class="event-footer">
+                <div class="event-tags">
+                  <span class="event-tag tag-{{ event.category|lower }}">{{ event.category }}</span>
+                  <span class="event-tag tag-{{ event.ticket_type|lower }}">{{ event.ticket_type }}</span>
+                </div>
+                <a href="{% url 'base:event_details' event.id %}" class="event-link">View Details</a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p class="text-muted">You haven't registered for any events yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Feather icons
+    feather.replace();
+  </script>
+</body>
+</html> 

@@ -1,0 +1,406 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-logo">EventAI</a>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="sidebar-nav-title">Overview</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="grid"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="calendar"></i>
+                        Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="users"></i>
+                        Team
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="dollar-sign"></i>
+                        Budget
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Analytics</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link active">
+                        <i data-feather="bar-chart-2"></i>
+                        Reports
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="pie-chart"></i>
+                        Attendance
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-nav-title">Account</div>
+            <ul class="sidebar-nav-links">
+                <li>
+                    <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
+                        <i data-feather="settings"></i>
+                        Settings
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:logout' %}" class="sidebar-nav-link">
+                        <i data-feather="log-out"></i>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-main">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Reports & Analytics</h1>
+            <button class="reports-button" title="Generate new report" aria-label="Generate new report">
+                <i data-feather="file-plus"></i>
+                Generate Report
+            </button>
+        </div>
+
+        <!-- Reports Overview -->
+        <div class="reports-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="file-text"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Total Reports</h3>
+                    <p>24</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="trending-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Growth Rate</h3>
+                    <p>+15.8%</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i data-feather="users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>User Engagement</h3>
+                    <p>92%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Charts -->
+        <div class="charts-grid">
+            <!-- Event Performance -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2>Event Performance</h2>
+                    <select class="time-select" title="Time period" aria-label="Select time period">
+                        <option>Last 30 days</option>
+                        <option>Last 60 days</option>
+                        <option>Last 90 days</option>
+                    </select>
+                </div>
+                <canvas id="eventPerformanceChart"></canvas>
+            </div>
+
+            <!-- Revenue Analysis -->
+            <div class="chart-container">
+                <div class="chart-header">
+                    <h2>Revenue Analysis</h2>
+                </div>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Reports Table -->
+        <div class="reports-table-container">
+            <div class="table-header">
+                <h2>Generated Reports</h2>
+                <div class="table-actions">
+                    <select class="filter-select" title="Filter reports" aria-label="Filter reports">
+                        <option>All Reports</option>
+                        <option>Event Reports</option>
+                        <option>Financial Reports</option>
+                        <option>Attendance Reports</option>
+                    </select>
+                    <button class="export-button" title="Export reports" aria-label="Export reports">
+                        <i data-feather="download"></i>
+                        Export
+                    </button>
+                </div>
+            </div>
+            <table class="reports-table">
+                <thead>
+                    <tr>
+                        <th>Report Name</th>
+                        <th>Type</th>
+                        <th>Generated Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Q1 Event Performance</td>
+                        <td>Event Report</td>
+                        <td>Mar 31, 2024</td>
+                        <td><span class="status-badge completed">Completed</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-icon" title="View report" aria-label="View report">
+                                    <i data-feather="eye"></i>
+                                </button>
+                                <button class="btn-icon" title="Download report" aria-label="Download report">
+                                    <i data-feather="download"></i>
+                                </button>
+                                <button class="btn-icon" title="Delete report" aria-label="Delete report">
+                                    <i data-feather="trash-2"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Add more reports here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .reports-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+    .reports-button {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+    .reports-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+    .reports-button i {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+    .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+    .chart-container {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+    .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+    .time-select,
+    .filter-select {
+        padding: 0.5rem;
+        border: 1px solid var(--dark-border);
+        border-radius: 0.5rem;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+    }
+
+    .reports-table-container {
+        background-color: var(--dark-card);
+        border: 1px solid var(--dark-border);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--dark-border);
+    }
+
+    .table-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .reports-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .reports-table th,
+    .reports-table td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid var(--dark-border);
+    }
+
+    .reports-table th {
+            font-weight: 600;
+        color: var(--dark-text-secondary);
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-badge.completed {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--success);
+    }
+
+    .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-icon {
+            width: 2rem;
+            height: 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        @media (max-width: 1024px) {
+        .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+    // Initialize Event Performance Chart
+    const performanceCtx = document.getElementById('eventPerformanceChart').getContext('2d');
+    new Chart(performanceCtx, {
+        type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                label: 'Event Success Rate',
+                data: [85, 90, 88, 92, 87, 94],
+                backgroundColor: '#6366f1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                    display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                    max: 100,
+                        ticks: {
+                        callback: value => value + '%'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Initialize Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+        type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue',
+                data: [30000, 35000, 32000, 38000, 35000, 42000],
+                borderColor: '#22c55e',
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                tension: 0.4,
+                fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                    display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                        callback: value => '$' + value
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %} 

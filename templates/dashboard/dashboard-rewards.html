@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards Dashboard - EventAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --dark-text: #e2e8f0;
+            --dark-text-secondary: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            line-height: 1.5;
+        }
+
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--dark-card);
+            border-right: 1px solid var(--dark-border);
+            padding: 1.5rem;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .sidebar-nav-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--dark-text-secondary);
+            margin: 1.5rem 0 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .sidebar-nav-links {
+            list-style: none;
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--dark-text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav-link:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+        .sidebar-nav-link.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .sidebar-nav-link i {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.75rem;
+        }
+
+        /* Main Content Styles */
+        .dashboard-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        /* Points Overview */
+        .points-overview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .points-card {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .points-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .points-card-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+
+        .points-card-title {
+            color: var(--dark-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .points-card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Rewards Grid */
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .reward-card {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .reward-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .reward-image {
+            width: 100%;
+            height: 160px;
+            background-color: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reward-image i {
+            width: 3rem;
+            height: 3rem;
+            color: var(--dark-text-secondary);
+        }
+
+        .reward-content {
+            padding: 1.5rem;
+        }
+
+        .reward-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .reward-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .reward-points {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .reward-description {
+            color: var(--dark-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .reward-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reward-tags {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .reward-tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .tag-discount {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .tag-vip {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+        }
+
+        .tag-merchandise {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .redeem-button {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .redeem-button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .redeem-button:disabled {
+            background-color: var(--dark-border);
+            cursor: not-allowed;
+        }
+
+        /* Reward History */
+        .reward-history {
+            margin-top: 2rem;
+        }
+
+        .history-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--dark-card);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .history-table th {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .history-table tr:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--dark-border);
+            }
+
+            .points-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .rewards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="sidebar-logo">EventAI</a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="sidebar-nav-title">Overview</div>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="dashboard-participant.html" class="sidebar-nav-link">
+                            <i data-feather="grid"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dashboard-my-events.html" class="sidebar-nav-link">
+                            <i data-feather="calendar"></i>
+                            My Events
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dashboard-rewards.html" class="sidebar-nav-link active">
+                            <i data-feather="star"></i>
+                            Rewards
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dashboard-explore.html" class="sidebar-nav-link">
+                            <i data-feather="compass"></i>
+                            Explore
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="sidebar-nav-title">Activity</div>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="dashboard-history.html" class="sidebar-nav-link">
+                            <i data-feather="clock"></i>
+                            History
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dashboard-feedback.html" class="sidebar-nav-link">
+                            <i data-feather="message-square"></i>
+                            Feedback
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="sidebar-nav-title">Account</div>
+                <ul class="sidebar-nav-links">
+                    <li>
+                        <a href="dashboard-profile.html" class="sidebar-nav-link">
+                            <i data-feather="user"></i>
+                            Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dashboard-settings.html" class="sidebar-nav-link">
+                            <i data-feather="settings"></i>
+                            Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="sidebar-nav-link" id="logout-link">
+                            <i data-feather="log-out"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="dashboard-main">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">Rewards</h1>
+            </div>
+            
+            <!-- Points Overview -->
+            <div class="points-overview">
+                <div class="points-card">
+                    <div class="points-card-header">
+                        <div class="points-card-icon">
+                            <i data-feather="star"></i>
+                        </div>
+                        <div>
+                            <div class="points-card-title">Total Points</div>
+                            <div class="points-card-value">750</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="points-card">
+                    <div class="points-card-header">
+                        <div class="points-card-icon">
+                            <i data-feather="award"></i>
+                        </div>
+                        <div>
+                            <div class="points-card-title">Points to Next Level</div>
+                            <div class="points-card-value">250</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="points-card">
+                    <div class="points-card-header">
+                        <div class="points-card-icon">
+                            <i data-feather="trending-up"></i>
+                        </div>
+                        <div>
+                            <div class="points-card-title">Points Earned This Month</div>
+                            <div class="points-card-value">150</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rewards Grid -->
+            <div class="rewards-grid">
+                <!-- Reward Card 1 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i data-feather="percent"></i>
+                    </div>
+                    <div class="reward-content">
+                        <div class="reward-header">
+                            <div>
+                                <h3 class="reward-title">Event Discount</h3>
+                                <div class="reward-points">200 pts</div>
+                            </div>
+                        </div>
+                        <p class="reward-description">
+                            Get 20% off your next event registration.
+                        </p>
+                        <div class="reward-footer">
+                            <div class="reward-tags">
+                                <span class="reward-tag tag-discount">Discount</span>
+                            </div>
+                            <button class="redeem-button" onclick="redeemReward('event-discount')">
+                                Redeem
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward Card 2 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i data-feather="award"></i>
+                    </div>
+                    <div class="reward-content">
+                        <div class="reward-header">
+                            <div>
+                                <h3 class="reward-title">VIP Upgrade</h3>
+                                <div class="reward-points">350 pts</div>
+                            </div>
+                        </div>
+                        <p class="reward-description">
+                            Upgrade any standard ticket to VIP access.
+                        </p>
+                        <div class="reward-footer">
+                            <div class="reward-tags">
+                                <span class="reward-tag tag-vip">VIP</span>
+                            </div>
+                            <button class="redeem-button" onclick="redeemReward('vip-upgrade')">
+                                Redeem
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reward Card 3 -->
+                <div class="reward-card">
+                    <div class="reward-image">
+                        <i data-feather="gift"></i>
+                    </div>
+                    <div class="reward-content">
+                        <div class="reward-header">
+                            <div>
+                                <h3 class="reward-title">Exclusive Merchandise</h3>
+                                <div class="reward-points">500 pts</div>
+                            </div>
+                        </div>
+                        <p class="reward-description">
+                            Get limited edition event merchandise.
+                        </p>
+                        <div class="reward-footer">
+                            <div class="reward-tags">
+                                <span class="reward-tag tag-merchandise">Merchandise</span>
+                            </div>
+                            <button class="redeem-button" onclick="redeemReward('merchandise')">
+                                Redeem
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reward History -->
+            <div class="reward-history">
+                <h2 class="history-title">Reward History</h2>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Reward</th>
+                            <th>Points</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Event Discount</td>
+                            <td>200</td>
+                            <td>Mar 15, 2024</td>
+                            <td>Redeemed</td>
+                        </tr>
+                        <tr>
+                            <td>VIP Upgrade</td>
+                            <td>350</td>
+                            <td>Mar 10, 2024</td>
+                            <td>Redeemed</td>
+                        </tr>
+                        <tr>
+                            <td>Exclusive Merchandise</td>
+                            <td>500</td>
+                            <td>Mar 5, 2024</td>
+                            <td>Redeemed</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Feather icons
+        feather.replace();
+
+        // Logout functionality
+        document.getElementById('logout-link').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Add logout logic here
+            window.location.href = 'login.html';
+        });
+
+        // Redeem reward functionality
+        function redeemReward(rewardId) {
+            const points = {
+                'event-discount': 200,
+                'vip-upgrade': 350,
+                'merchandise': 500
+            };
+
+            const currentPoints = 750; // This would come from your backend
+            const requiredPoints = points[rewardId];
+
+            if (currentPoints >= requiredPoints) {
+                alert(`Successfully redeemed reward: ${rewardId}`);
+                // Add logic to update points and reward history
+            } else {
+                alert('Not enough points to redeem this reward');
+            }
+        }
+    </script>
+</body>
+</html> 

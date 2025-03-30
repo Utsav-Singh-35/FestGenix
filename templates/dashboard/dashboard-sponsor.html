@@ -1,0 +1,415 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>EventAI</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'base:sponsor_dashboard' %}" class="active">
+                        <i data-feather="home"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_sponsorship' %}">
+                        <i data-feather="award"></i> Sponsorship
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_analytics' %}">
+                        <i data-feather="bar-chart-2"></i> Analytics
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:sponsor_settings' %}">
+                        <i data-feather="settings"></i> Settings
+                    </a>
+                </li>
+                <li class="logout-item">
+                    <a href="{% url 'base:logout' %}" class="logout-link">
+                        <i data-feather="log-out"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="dashboard-header">
+            <h1>Sponsor Dashboard</h1>
+            <div class="header-actions">
+                <button class="btn btn-primary">New Sponsorship</button>
+            </div>
+        </header>
+
+        <!-- Quick Stats -->
+        <section class="dashboard-section">
+            <h2>Quick Stats</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Events</h3>
+                        <p class="stat-value">{{ total_events }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Active Sponsorships</h3>
+                        <p class="stat-value">{{ active_sponsorships }}</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Investment</h3>
+                        <p class="stat-value">${{ total_investment }}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sponsored Events -->
+        <section class="dashboard-section">
+            <h2>Sponsored Events</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Investment</th>
+                            <th>ROI</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.date|date:"M d, Y" }}</td>
+                            <td><span class="status-badge status-{{ event.status }}">{{ event.status }}</span></td>
+                            <td>${{ event.budget.total_amount }}</td>
+                            <td>{{ event.roi }}%</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon" title="View details">
+                                        <i data-feather="eye"></i>
+                                    </button>
+                                    <button class="btn-icon" title="Edit">
+                                        <i data-feather="edit"></i>
+                                    </button>
+                                    <button class="btn-icon" title="Delete">
+                                        <i data-feather="trash-2"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-border: #334155;
+            --dark-text: #e2e8f0;
+            --dark-text-secondary: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
+            line-height: 1.5;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--dark-card);
+            border-right: 1px solid var(--dark-border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .sidebar-nav ul {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+        display: flex;
+        align-items: center;
+            padding: 0.75rem 1rem;
+            color: var(--dark-text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav a:hover {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+    .sidebar-nav a.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+    .sidebar-nav a i {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 0.75rem;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+        grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-icon {
+            width: 3rem;
+            height: 3rem;
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stat-content h3 {
+            color: var(--dark-text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Table Styles */
+        .table-container {
+            background-color: var(--dark-card);
+            border: 1px solid var(--dark-border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        th {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background-color: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background-color: rgba(234, 179, 8, 0.1);
+            color: var(--warning);
+        }
+
+        .status-completed {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+        }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-icon {
+        padding: 0.5rem;
+        border: none;
+        border-radius: 0.375rem;
+        background-color: transparent;
+        color: var(--dark-text-secondary);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-icon:hover {
+        background-color: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+    }
+
+    /* Logout Link */
+    .logout-item {
+        margin-top: auto;
+        border-top: 1px solid var(--dark-border);
+        padding-top: 1rem;
+    }
+
+    .logout-link {
+        color: var(--danger) !important;
+    }
+
+    .logout-link:hover {
+        background-color: rgba(239, 68, 68, 0.1) !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--dark-border);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+
+<script>
+    // Initialize Feather icons
+    feather.replace();
+</script>
+{% endblock %} 

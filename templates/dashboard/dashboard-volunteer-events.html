@@ -1,0 +1,529 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>EventAI</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <ul>
+                <li>
+                    <a href="{% url 'base:volunteer_dashboard' %}">
+                        <i data-feather="home"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:volunteer_events' %}" class="active">
+                        <i data-feather="calendar"></i> Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:volunteer_tasks' %}">
+                        <i data-feather="check-square"></i> Tasks
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'base:volunteer_settings' %}">
+                        <i data-feather="settings"></i> Settings
+                    </a>
+                </li>
+                <li class="logout-item">
+                    <a href="{% url 'base:logout' %}" class="logout-link">
+                        <i data-feather="log-out"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="dashboard-header">
+            <h1>Events</h1>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i data-feather="search"></i>
+                    <input type="text" placeholder="Search events..." class="search-input" aria-label="Search events">
+                </div>
+                <select class="form-select" aria-label="Filter events">
+                    <option value="all">All Events</option>
+                    <option value="registered">Registered</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="past">Past</option>
+                </select>
+            </div>
+        </header>
+
+        <!-- Upcoming Events -->
+        <section class="dashboard-section">
+            <h2>Upcoming Events</h2>
+            <div class="events-grid">
+                {% for event in upcoming_events %}
+                <div class="event-card">
+                    <div class="event-header">
+                        <span class="event-date">{{ event.date|date:"M d, Y" }}</span>
+                        <span class="event-badge {% if event.is_registered %}registered{% endif %}">
+                            {% if event.is_registered %}Registered{% else %}Open{% endif %}
+                        </span>
+                    </div>
+                    <h3 class="event-title">{{ event.name }}</h3>
+                    <p class="event-description">{{ event.description|truncatechars:100 }}</p>
+                    <div class="event-details">
+                        <div class="detail-item">
+                            <i data-feather="map-pin"></i>
+                            <span>{{ event.location }}</span>
+                        </div>
+                        <div class="detail-item">
+                            <i data-feather="clock"></i>
+                            <span>{{ event.start_time|time:"g:i A" }}</span>
+                        </div>
+                    </div>
+                    <div class="event-actions">
+                        <button class="btn btn-primary" onclick="registerEvent('{{ event.id }}')">
+                            {% if event.is_registered %}Withdraw{% else %}Register{% endif %}
+                        </button>
+                        <button class="btn btn-secondary" onclick="viewEventDetails('{{ event.id }}')">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-state">
+                    <i data-feather="calendar"></i>
+                    <p>No upcoming events found</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Past Events -->
+        <section class="dashboard-section">
+            <h2>Past Events</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Event Name</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in past_events %}
+                        <tr>
+                            <td>{{ event.name }}</td>
+                            <td>{{ event.date|date:"M d, Y" }}</td>
+                            <td>{{ event.location }}</td>
+                            <td>{{ event.volunteer_role }}</td>
+                            <td>
+                                <span class="status-badge {{ event.status|lower }}">
+                                    {{ event.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-icon" onclick="viewEventDetails('{{ event.id }}')">
+                                    <i data-feather="eye"></i>
+                                </button>
+                                {% if event.has_certificate %}
+                                <button class="btn btn-icon" onclick="downloadCertificate('{{ event.id }}')">
+                                    <i data-feather="download"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <i data-feather="calendar"></i>
+                                <p>No past events found</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<style>
+    :root {
+        --primary: #6366f1;
+        --primary-dark: #4f46e5;
+        --secondary: #64748b;
+        --success: #22c55e;
+        --warning: #eab308;
+        --danger: #ef4444;
+        --dark-bg: #0f172a;
+        --dark-card: #1e293b;
+        --dark-border: #334155;
+        --dark-text: #e2e8f0;
+        --dark-text-secondary: #94a3b8;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--dark-bg);
+        color: var(--dark-text);
+        line-height: 1.5;
+    }
+
+    .dashboard-container {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    /* Sidebar Styles */
+    .sidebar {
+        width: 280px;
+        background-color: var(--dark-card);
+        border-right: 1px solid var(--dark-border);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-header {
+        margin-bottom: 2rem;
+    }
+
+    .sidebar-header h2 {
+        color: var(--primary);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .sidebar-nav ul {
+        list-style: none;
+    }
+
+    .sidebar-nav li {
+        margin-bottom: 0.5rem;
+    }
+
+    .sidebar-nav a {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        color: var(--dark-text-secondary);
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.2s;
+        gap: 0.75rem;
+    }
+
+    .sidebar-nav a:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--dark-text);
+    }
+
+    .sidebar-nav a.active {
+        background-color: var(--primary);
+        color: #fff;
+    }
+
+    .sidebar-nav i {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .logout-item {
+        margin-top: auto;
+    }
+
+    .logout-link {
+        color: var(--danger) !important;
+    }
+
+    .logout-link:hover {
+        background-color: rgba(239, 68, 68, 0.1) !important;
+    }
+
+    /* Main Content Styles */
+    .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-header h1 {
+        font-size: 1.875rem;
+        font-weight: 600;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-box {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background-color: var(--dark-bg);
+        border: 1px solid var(--dark-border);
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .search-box i {
+        color: var(--dark-text-secondary);
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .search-input {
+        background: none;
+        border: none;
+        color: var(--dark-text);
+        font-size: 0.875rem;
+        outline: none;
+        min-width: 200px;
+    }
+
+    .search-input::placeholder {
+        color: var(--dark-text-secondary);
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: var(--primary-dark);
+    }
+
+    .btn-secondary {
+        background-color: transparent;
+        color: var(--dark-text);
+        border: 1px solid var(--dark-border);
+    }
+
+    .btn-secondary:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-icon {
+        padding: 0.5rem;
+        background: none;
+        border: none;
+        color: var(--dark-text-secondary);
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+    .btn-icon:hover {
+        color: var(--dark-text);
+    }
+
+    /* Dashboard Sections */
+    .dashboard-section {
+        background-color: var(--dark-card);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .dashboard-section h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    /* Events Grid */
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .event-card {
+        background-color: var(--dark-bg);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+    }
+
+    .event-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .event-date {
+        color: var(--dark-text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .event-badge {
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        background-color: var(--dark-card);
+    }
+
+    .event-badge.registered {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--success);
+    }
+
+    .event-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .event-description {
+        color: var(--dark-text-secondary);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+    }
+
+    .event-details {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--dark-text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .detail-item i {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .event-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    /* Table Styles */
+    .table-container {
+        background-color: var(--dark-bg);
+        border-radius: 0.75rem;
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    th, td {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        border-bottom: 1px solid var(--dark-border);
+    }
+
+    th {
+        background-color: var(--dark-bg);
+        color: var(--dark-text-secondary);
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    td {
+        font-size: 0.875rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.5rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .status-badge.completed {
+        background-color: rgba(34, 197, 94, 0.1);
+        color: var(--success);
+    }
+
+    .status-badge.cancelled {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+    }
+
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 2rem;
+        color: var(--dark-text-secondary);
+    }
+
+    .empty-state i {
+        width: 2rem;
+        height: 2rem;
+    }
+</style>
+
+{% block extra_js %}
+<script>
+    // Initialize Feather Icons
+    feather.replace();
+
+    function registerEvent(eventId) {
+        // Implement event registration logic
+        console.log('Register for event:', eventId);
+    }
+
+    function viewEventDetails(eventId) {
+        // Implement view event details logic
+        console.log('View event details:', eventId);
+    }
+
+    function downloadCertificate(eventId) {
+        // Implement certificate download logic
+        console.log('Download certificate:', eventId);
+    }
+</script>
+{% endblock %}
+
+{% endblock %} 
