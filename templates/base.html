@@ -8,95 +8,182 @@
     <script src="https://unpkg.com/feather-icons"></script>
     {% load static %}
     <style>
-        /* Chatbot Button Styles */
-        .chatbot-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 260px;
-            height: 260px;
-            background: #007bff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            overflow: hidden;
+        /* Ensure proper stacking context */
+        html, body {
+            position: relative;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
         }
 
-        .chatbot-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-        }
-
-        .chatbot-button img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .chatbot-button:hover img {
-            transform: scale(1.1);
-        }
-
-        /* Modal Styles */
-        .chatbot-modal {
-            display: none;
+        /* Chatbot Container */
+        #chatbot-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1001;
+            pointer-events: none;
+            z-index: 2147483647;
+            isolation: isolate;
+        }
+
+        /* Chatbot Button Styles */
+        .chatbot-button {
+            position: fixed !important;
+            bottom: 30px !important;
+            right: 30px !important;
+            width: 120px !important;
+            height: 120px !important;
+            border-radius: 50% !important;
+            background: linear-gradient(135deg, #0088ff, #00b3ff) !important;
+            border: none !important;
+            cursor: pointer !important;
+            box-shadow: 
+                0 12px 24px rgba(0, 119, 255, 0.4),
+                0 6px 12px rgba(0, 119, 255, 0.3),
+                0 0 0 2px rgba(255, 255, 255, 0.2) !important;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            z-index: 2147483647 !important;
+            display: flex !important;
+            align-items: flex-end !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            transform: translateY(0) rotate(0deg) !important;
+            transform-style: preserve-3d !important;
+            perspective: 1000px !important;
+            overflow: visible !important;
+            pointer-events: auto !important;
+        }
+
+        .chatbot-button img {
+            position: absolute !important;
+            bottom: -90px !important;
+            left: -50% !important;
+            width: 200px !important;
+            height: 260px !important;
+            object-fit: contain !important;
+            transform: translateY(-60px) translateZ(20px) !important;
+            filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.3)) !important;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            z-index: 999999 !important;
+            pointer-events: none !important;
+        }
+
+        .chatbot-button:hover {
+            transform: translateY(-12px) rotate(8deg) !important;
+            box-shadow: 
+                0 25px 35px rgba(0, 119, 255, 0.5),
+                0 15px 20px rgba(0, 119, 255, 0.4),
+                0 0 0 4px rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .chatbot-button:hover img {
+            transform: translateY(-80px) translateZ(30px) scale(1.1) !important;
+            filter: drop-shadow(0 15px 20px rgba(0, 0, 0, 0.4)) !important;
+        }
+
+        /* Modal Styles */
+        .chatbot-modal {
+            display: none;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.5) !important;
+            z-index: 999998 !important;
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.3s ease !important;
+            pointer-events: auto !important;
         }
 
         .chatbot-modal.active {
-            display: flex;
-            opacity: 1;
+            display: flex !important;
+            opacity: 1 !important;
         }
 
         .chatbot-modal-content {
-            position: relative;
-            width: 90%;
-            max-width: 1000px;
-            height: 80vh;
-            margin: auto;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            transform: translateY(20px);
-            transition: transform 0.3s ease;
+            position: relative !important;
+            width: 95% !important;
+            max-width: 1200px !important;
+            height: 90vh !important;
+            margin: auto !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+            transform: translateY(20px) scale(0.98) !important;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.2),
+                0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            backdrop-filter: blur(10px) !important;
+            z-index: 999999 !important;
         }
 
         .chatbot-modal.active .chatbot-modal-content {
-            transform: translateY(0);
+            transform: translateY(0) scale(1) !important;
         }
 
         .chatbot-close {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            z-index: 1002;
+            position: absolute !important;
+            top: 25px !important;
+            right: 25px !important;
+            width: 50px !important;
+            height: 50px !important;
+            border-radius: 50% !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            border: none !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 999999 !important;
+            transition: background-color 0.3s ease !important;
+        }
+
+        .chatbot-close:hover {
+            background: rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .chatbot-close i {
+            width: 30px !important;
+            height: 30px !important;
+            color: #333 !important;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(-60px) translateZ(20px) !important;
+            }
+            50% {
+                transform: translateY(-65px) translateZ(20px) !important;
+            }
+            100% {
+                transform: translateY(-60px) translateZ(20px) !important;
+            }
+        }
+
+        .chatbot-button img {
+            animation: float 3s ease-in-out infinite !important;
+        }
+
+        .chatbot-button:hover img {
+            animation: none !important;
         }
 
         /* Responsive Styles */
         @media (max-width: 768px) {
             .chatbot-modal-content {
-                width: 100%;
-                height: 100%;
-                border-radius: 0;
+                width: 100% !important;
+                height: 100% !important;
+                border-radius: 0 !important;
+            }
+
+            .chatbot-button {
+                bottom: 20px !important;
+                right: 20px !important;
             }
         }
     </style>
@@ -105,22 +192,28 @@
 <body>
     {% block content %}{% endblock %}
     
-    <!-- Chatbot Button -->
-    <button class="chatbot-button" onclick="openChatbot()">
-        <img src="{% static 'images/chatbot.png' %}" alt="Chat with AI Assistant">
-    </button>
+    <!-- Chatbot Container -->
+    <div id="chatbot-container">
+        <!-- Chatbot Button -->
+        <button class="chatbot-button" onclick="openChatbot()" id="chatbot-button">
+            <img src="{% static 'images/chatbot.png' %}" alt="Chat with AI Assistant">
+        </button>
 
-    <!-- Chatbot Modal -->
-    <div class="chatbot-modal" id="chatbot-modal">
-        <div class="chatbot-modal-content">
-            <button class="chatbot-close" onclick="closeChatbot()">
-                <i data-feather="x"></i>
-            </button>
-            <iframe src="{% url 'base:chatbot' %}" style="width: 100%; height: 100%; border: none;"></iframe>
+        <!-- Chatbot Modal -->
+        <div class="chatbot-modal" id="chatbot-modal">
+            <div class="chatbot-modal-content">
+                <button class="chatbot-close" onclick="closeChatbot()">
+                    <i data-feather="x"></i>
+                </button>
+                <iframe src="{% url 'base:chatbot' %}" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
         </div>
     </div>
 
     <script>
+        // Initialize Feather icons
+        feather.replace();
+
         // Chatbot Modal Functions
         function openChatbot() {
             const modal = document.getElementById('chatbot-modal');
@@ -141,8 +234,13 @@
             }
         });
 
-        // Initialize Feather icons
-        feather.replace();
+        // Ensure chatbot is properly initialized
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatbotContainer = document.getElementById('chatbot-container');
+            if (chatbotContainer) {
+                document.body.appendChild(chatbotContainer);
+            }
+        });
     </script>
     {% block extra_js %}{% endblock %}
 </body>

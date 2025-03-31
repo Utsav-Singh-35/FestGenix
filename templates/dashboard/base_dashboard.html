@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard">
+    {% block dashboard_content %}{% endblock %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Dashboard styles */
+    .dashboard {
+        position: relative;
+        min-height: 100vh;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    /* Ensure proper stacking for dashboard elements */
+    .sidebar {
+        z-index: 100;
+    }
+
+    .dashboard-main {
+        z-index: 50;
+    }
+
+    /* Override any conflicting styles */
+    #chatbot-container {
+        position: fixed !important;
+        z-index: 2147483647 !important;
+        pointer-events: none !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .chatbot-button {
+        pointer-events: auto !important;
+        z-index: 2147483647 !important;
+        position: fixed !important;
+        bottom: 30px !important;
+        right: 30px !important;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .chatbot-modal {
+        pointer-events: auto !important;
+        z-index: 2147483646 !important;
+    }
+
+    /* Fix stacking context */
+    body {
+        isolation: isolate;
+    }
+
+    /* Ensure sidebar doesn't overlap */
+    .sidebar {
+        isolation: isolate;
+        z-index: 1000;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+    // Ensure chatbot is properly positioned
+    document.addEventListener('DOMContentLoaded', function() {
+        // Force reflow of chatbot container
+        const chatbotContainer = document.getElementById('chatbot-container');
+        if (chatbotContainer) {
+            chatbotContainer.style.display = 'none';
+            void chatbotContainer.offsetHeight; // Force reflow
+            chatbotContainer.style.display = '';
+            
+            // Move to body if not already there
+            if (!document.body.contains(chatbotContainer)) {
+                document.body.appendChild(chatbotContainer);
+            }
+        }
+
+        // Ensure button is visible
+        const chatbotButton = document.querySelector('.chatbot-button');
+        if (chatbotButton) {
+            chatbotButton.style.visibility = 'visible';
+            chatbotButton.style.opacity = '1';
+        }
+    });
+</script>
+{% endblock %} 
