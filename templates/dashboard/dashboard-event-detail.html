@@ -1,0 +1,210 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="dashboard-wrapper">
+    <div class="main-content">
+        <div class="content-header">
+            <h1>Event Details</h1>
+            <div class="header-actions">
+                <button class="btn btn-warning" onclick="location.href='{% url 'base:event_edit' event.id %}'">
+                    <i data-feather="edit"></i> Edit Event
+                </button>
+                <button class="btn btn-secondary" onclick="location.href='{% url 'base:events_dashboard' %}'">
+                    <i data-feather="arrow-left"></i> Back to Events
+                </button>
+            </div>
+        </div>
+
+        <div class="event-detail-card">
+            <div class="card">
+                <div class="card-header">
+                    <div class="event-header">
+                        <h2>{{ event.title }}</h2>
+                        <span class="event-status {{ event.status|lower }}">{{ event.status }}</span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="event-info">
+                        <div class="info-group">
+                            <label><i data-feather="calendar"></i> Date & Time</label>
+                            <p>{{ event.start_date }}</p>
+                        </div>
+                        <div class="info-group">
+                            <label><i data-feather="map-pin"></i> Location</label>
+                            <p>{{ event.location }}</p>
+                        </div>
+                        <div class="info-group">
+                            <label><i data-feather="users"></i> Capacity</label>
+                            <p>{{ event.capacity }} attendees</p>
+                        </div>
+                    </div>
+                    
+                    <div class="event-description">
+                        <h3>Description</h3>
+                        <p>{{ event.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --dark-bg: #0B1121;
+    --dark-card: #111827;
+    --dark-border: #1F2937;
+    --dark-text: #F9FAFB;
+    --dark-text-secondary: #9CA3AF;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --success: #22c55e;
+    --warning: #eab308;
+    --danger: #ef4444;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.content-header h1 {
+    color: var(--dark-text);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-warning {
+    background: var(--warning);
+    color: var(--dark-text);
+}
+
+.btn-warning:hover {
+    background: #ca8a04;
+}
+
+.btn-secondary {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-border);
+}
+
+.btn-secondary:hover {
+    background: var(--dark-border);
+}
+
+.event-detail-card {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.card {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--dark-border);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.event-header h2 {
+    margin: 0;
+    color: var(--dark-text);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.event-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    text-transform: capitalize;
+}
+
+.event-status.upcoming { background: var(--primary); color: var(--dark-text); }
+.event-status.ongoing { background: var(--success); color: var(--dark-text); }
+.event-status.completed { background: var(--dark-border); color: var(--dark-text-secondary); }
+.event-status.cancelled { background: var(--danger); color: var(--dark-text); }
+
+.event-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.info-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dark-text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.info-group p {
+    margin: 0;
+    color: var(--dark-text);
+    font-size: 1.1rem;
+}
+
+.event-description h3 {
+    color: var(--dark-text);
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.event-description p {
+    color: var(--dark-text-secondary);
+    line-height: 1.6;
+}
+
+.feather {
+    width: 1rem;
+    height: 1rem;
+    stroke-width: 2;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    feather.replace();
+});
+</script>
+{% endblock %} 
