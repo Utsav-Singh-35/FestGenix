@@ -1,20 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EventAI - Discover the Wonders</title>
-  {% load static %}
-  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  <link rel="stylesheet" href="{% static 'css/components.css' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <script src="https://unpkg.com/feather-icons"></script>
-  <script src="{% static 'js/data.js' %}"></script>
-  <script src="{% static 'js/components.js' %}"></script>
-  <script src="{% static 'js/main.js' %}"></script>
-  <style>
+{% extends 'base.html' %}
+{% load static %}
 
+{% block title %}EventAI - Discover the Wonders{% endblock %}
+
+{% block extra_css %}
+<link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://unpkg.com/feather-icons"></script>
+<script src="{% static 'js/data.js' %}"></script>
+<script src="{% static 'js/components.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+<style>
     .hero .container {
       display: flex;
       justify-content: center;
@@ -150,240 +148,132 @@
         height: 400px;
       }
     }
+</style>
+{% endblock %}
 
-    /* Updated Chatbot Button Styles */
-    .chatbot-button {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      width: 60px;
-      height: 60px;
-      background: #007bff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000;
-      transition: all 0.3s ease;
-      overflow: hidden;
-    }
-
-    .chatbot-button:hover {
-      transform: scale(1.1);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.2);
-    }
-
-    .chatbot-button img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.3s ease;
-    }
-
-    .chatbot-button:hover img {
-      transform: scale(1.1);
-    }
-
-    /* Modal Styles */
-    .chatbot-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 1001;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .chatbot-modal.active {
-      display: flex;
-      opacity: 1;
-    }
-
-    .chatbot-modal-content {
-      position: relative;
-      width: 90%;
-      max-width: 1000px;
-      height: 80vh;
-      margin: auto;
-      background: white;
-      border-radius: 20px;
-      overflow: hidden;
-      transform: translateY(20px);
-      transition: transform 0.3s ease;
-    }
-
-    .chatbot-modal.active .chatbot-modal-content {
-      transform: translateY(0);
-    }
-
-    .chatbot-close {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      z-index: 1002;
-    }
-
-    /* Responsive Styles */
-    @media (max-width: 768px) {
-      .chatbot-modal-content {
-        width: 100%;
-        height: 100%;
-        border-radius: 0;
-      }
-    }
-  </style>
-</head>
-<body>
-  {% block content %}
-  <!-- Navigation -->
-  <header class="header">
-    <div class="container">
-      <div class="header-content">
-        <div class="logo">
-          <span>EventAI</span>
-        </div>
-        <nav class="main-nav">
-          <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#events">Events</a></li>
-          </ul>
-        </nav>
-        <div class="auth-buttons">
-          <a href="{% url 'base:login' %}" class="auth-btn login-nav-btn">Login</a>
-          <a href="{% url 'base:signup' %}" class="auth-btn signup-nav-btn">Sign Up</a>
-        </div>
-        <button class="mobile-menu-btn" aria-label="Toggle menu">
-          <i class="fas fa-bars"></i>
-        </button>
+{% block content %}
+<!-- Navigation -->
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <div class="logo">
+        <span>EventAI</span>
       </div>
-    </div>
-  </header>
-
-  <!-- Mobile Menu -->
-  <div class="mobile-menu">
-    <ul>
-      <li><a href="#home">Home</a></li>
-      <li><a href="#events">Events</a></li>
-    </ul>
-    <div class="mobile-auth-buttons">
-      <a href="{% url 'base:login' %}" class="auth-btn login-nav-btn">Login</a>
-      <a href="{% url 'base:signup' %}" class="auth-btn signup-nav-btn">Sign Up</a>
-    </div>
-  </div>
-
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-text">
-          <h1>AI-Powered Event Management Website</h1>
-          <p>Transform your college events with intelligent automation</p>
-          <button class="btn btn-white">Get Started</button>
-        </div>
-        <div class="hero-image">
-          <div class="glow-effect"></div>
-          <img src="{% static 'images/panda.jpg' %}" alt="Panda with glowing orb">
-        </div>
+      <nav class="main-nav">
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#events">Events</a></li>
+        </ul>
+      </nav>
+      <div class="auth-buttons">
+        <a href="{% url 'base:login' %}" class="auth-btn login-nav-btn">Login</a>
+        <a href="{% url 'base:signup' %}" class="auth-btn signup-nav-btn">Sign Up</a>
       </div>
-    </div>
-  </section>
-
-  <!-- Features Section -->
- 
-
-  <!-- Globe Section -->
-  <section class="globe-section">
-    <div class="globe-container">
-      <div class="globe-data">
-        <div class="globe-text">
-          <h2 class="globe-heading">Interactive 3D Experience</h2>
-          <p class="globe-sub-head">Explore our virtual event space in an immersive 3D environment.</p>
-        </div>
-        <div class="globe-text">
-          <h2 class="globe-heading">Virtual Venues</h2>
-          <p class="globe-sub-head">Discover unique virtual venues for your next event.</p>
-        </div>
-      </div>
-      <div class="globe-3d">
-        <iframe src='https://my.spline.design/worldplanet-cc0a729571d6bc9c113b8a1cbdbfed02/'></iframe>
-      </div>
-      <div class="globe-data">
-        <div class="globe-text">
-          <h2 class="globe-heading">Global Reach</h2>
-          <p class="globe-sub-head">Connect with participants from around the world.</p>
-        </div>
-        <div class="globe-text">
-          <h2 class="globe-heading">Innovative Platform</h2>
-          <p class="globe-sub-head">Experience the future of event management.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Event Highlights -->
-  <section class="events">
-    <div class="container">
-      <h2>Event Highlights</h2>
-      <div class="events-grid">
-        <!-- Events will be populated by JavaScript -->
-      </div>
-    </div>
-  </section>
-
-  <!-- Benefits Section -->
-  <section class="benefits">
-    <div class="container">
-      <div class="benefits-grid">
-        <!-- Benefits will be populated by JavaScript -->
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section class="testimonials">
-    <div class="container">
-      <div class="testimonials-grid">
-        <!-- Testimonials will be populated by JavaScript -->
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-grid">
-        <!-- Footer content will be populated by JavaScript -->
-      </div>
-    </div>
-  </footer>
-
-  <!-- Chatbot Button -->
-  <button class="chatbot-button" onclick="openChatbot()">
-    <img src="{% static 'images/chat-bot-icon.avif' %}" alt="Chat with AI Assistant">
-  </button>
-
-  <!-- Chatbot Modal -->
-  <div class="chatbot-modal" id="chatbot-modal">
-    <div class="chatbot-modal-content">
-      <button class="chatbot-close" onclick="closeChatbot()">
-        <i data-feather="x"></i>
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <i class="fas fa-bars"></i>
       </button>
-      <iframe src="{% url 'base:chatbot' %}" style="width: 100%; height: 100%; border: none;"></iframe>
     </div>
   </div>
-  {% endblock content %}
-  <script>
+</header>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu">
+  <ul>
+    <li><a href="#home">Home</a></li>
+    <li><a href="#events">Events</a></li>
+  </ul>
+  <div class="mobile-auth-buttons">
+    <a href="{% url 'base:login' %}" class="auth-btn login-nav-btn">Login</a>
+    <a href="{% url 'base:signup' %}" class="auth-btn signup-nav-btn">Sign Up</a>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1>AI-Powered Event Management Website</h1>
+        <p>Transform your college events with intelligent automation</p>
+        <button class="btn btn-white">Get Started</button>
+      </div>
+      <div class="hero-image">
+        <div class="glow-effect"></div>
+        <img src="{% static 'images/panda.jpg' %}" alt="Panda with glowing orb">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Globe Section -->
+<section class="globe-section">
+  <div class="globe-container">
+    <div class="globe-data">
+      <div class="globe-text">
+        <h2 class="globe-heading">Interactive 3D Experience</h2>
+        <p class="globe-sub-head">Explore our virtual event space in an immersive 3D environment.</p>
+      </div>
+      <div class="globe-text">
+        <h2 class="globe-heading">Virtual Venues</h2>
+        <p class="globe-sub-head">Discover unique virtual venues for your next event.</p>
+      </div>
+    </div>
+    <div class="globe-3d">
+      <iframe src='https://my.spline.design/worldplanet-cc0a729571d6bc9c113b8a1cbdbfed02/'></iframe>
+    </div>
+    <div class="globe-data">
+      <div class="globe-text">
+        <h2 class="globe-heading">Global Reach</h2>
+        <p class="globe-sub-head">Connect with participants from around the world.</p>
+      </div>
+      <div class="globe-text">
+        <h2 class="globe-heading">Innovative Platform</h2>
+        <p class="globe-sub-head">Experience the future of event management.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Event Highlights -->
+<section class="events">
+  <div class="container">
+    <h2>Event Highlights</h2>
+    <div class="events-grid">
+      <!-- Events will be populated by JavaScript -->
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="benefits">
+  <div class="container">
+    <div class="benefits-grid">
+      <!-- Benefits will be populated by JavaScript -->
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+  <div class="container">
+    <div class="testimonials-grid">
+      <!-- Testimonials will be populated by JavaScript -->
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Footer content will be populated by JavaScript -->
+    </div>
+  </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
     // Mobile menu functionality
     const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
     const mobileMenu = document.querySelector('.mobile-menu');
@@ -435,29 +325,5 @@
     window.addEventListener('load', () => {
       createStars(200);
     });
-
-    // Chatbot Modal Functions
-    function openChatbot() {
-      const modal = document.getElementById('chatbot-modal');
-      modal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeChatbot() {
-      const modal = document.getElementById('chatbot-modal');
-      modal.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('chatbot-modal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeChatbot();
-      }
-    });
-
-    // Initialize Feather icons
-    feather.replace();
-  </script>
-</body>
-</html> 
+</script>
+{% endblock %} 

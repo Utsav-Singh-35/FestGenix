@@ -6,11 +6,144 @@
     <title>{% block title %}EventAI{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/feather-icons"></script>
+    {% load static %}
+    <style>
+        /* Chatbot Button Styles */
+        .chatbot-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 260px;
+            height: 260px;
+            background: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .chatbot-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+
+        .chatbot-button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .chatbot-button:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .chatbot-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1001;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .chatbot-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .chatbot-modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 1000px;
+            height: 80vh;
+            margin: auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .chatbot-modal.active .chatbot-modal-content {
+            transform: translateY(0);
+        }
+
+        .chatbot-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 1002;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .chatbot-modal-content {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+            }
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     {% block content %}{% endblock %}
     
+    <!-- Chatbot Button -->
+    <button class="chatbot-button" onclick="openChatbot()">
+        <img src="{% static 'images/chatbot.png' %}" alt="Chat with AI Assistant">
+    </button>
+
+    <!-- Chatbot Modal -->
+    <div class="chatbot-modal" id="chatbot-modal">
+        <div class="chatbot-modal-content">
+            <button class="chatbot-close" onclick="closeChatbot()">
+                <i data-feather="x"></i>
+            </button>
+            <iframe src="{% url 'base:chatbot' %}" style="width: 100%; height: 100%; border: none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        // Chatbot Modal Functions
+        function openChatbot() {
+            const modal = document.getElementById('chatbot-modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeChatbot() {
+            const modal = document.getElementById('chatbot-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('chatbot-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChatbot();
+            }
+        });
+
+        // Initialize Feather icons
+        feather.replace();
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html> 
