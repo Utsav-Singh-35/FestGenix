@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}EventAI - Discover the Wonders{% endblock %}
+{% block title %}FestGenix - India's Premier Event Platform{% endblock %}
 
 {% block extra_css %}
 <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
@@ -13,38 +13,265 @@
 <script src="{% static 'js/components.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 <style>
+    /* Enhanced Hero Section Styles */
+    .hero {
+        position: relative;
+        min-height: 100vh;
+        background: linear-gradient(135deg, 
+            #1a1b2e 0%, 
+            #2d1b3d 25%, 
+            #1e1b4b 50%, 
+            #312e81 75%, 
+            #3730a3 100%
+        );
+        overflow: hidden;
+        padding: 80px 0;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1511795409834-43254d8b6e75?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80') center/cover;
+        opacity: 0.04;
+        animation: zoomInOut 20s infinite alternate;
+        mix-blend-mode: overlay;
+    }
+
+    .hero::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 50% 50%, 
+            rgba(139, 92, 246, 0.1) 0%,
+            rgba(139, 92, 246, 0.05) 25%,
+            rgba(139, 92, 246, 0) 50%
+        );
+        pointer-events: none;
+    }
+
+    @keyframes zoomInOut {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1.1);
+        }
+    }
+
     .hero .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 90vh;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: calc(100vh - 160px);
+        padding: 0 20px;
     }
+
+    .hero-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 60px;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .hero-text {
+        flex: 1;
+        max-width: 600px;
+        color: #fff;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-text h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, 
+            #ffffff 0%, 
+            #c4b5fd 50%, 
+            #a78bfa 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientFlow 8s linear infinite;
+    }
+
+    @keyframes gradientFlow {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .hero-text p {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+    }
+
+    .btn-white {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: rgba(139, 92, 246, 0.1);
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        border-radius: 50px;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-white:hover {
+        background: rgba(139, 92, 246, 0.15);
+        border-color: rgba(139, 92, 246, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
     .hero-image {
-      position: relative;
-      width: 400px;
-      height: 400px;
-      margin: 0 auto;
+        position: relative;
+        width: 500px;
+        height: 500px;
+        animation: float 6s ease-in-out infinite;
     }
-    
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
     .hero-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 8px solid #fff;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 8px solid rgba(139, 92, 246, 0.1);
+        box-shadow: 
+            0 0 30px rgba(139, 92, 246, 0.08),
+            0 0 60px rgba(139, 92, 246, 0.05);
+        transition: all 0.3s ease;
     }
-    
+
+    .hero-image:hover img {
+        border-color: rgba(139, 92, 246, 0.15);
+        box-shadow: 
+            0 0 40px rgba(139, 92, 246, 0.12),
+            0 0 80px rgba(139, 92, 246, 0.08);
+        transform: scale(1.02);
+    }
+
     .glow-effect {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 120%;
-      height: 120%;
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
-      border-radius: 50%;
-      z-index: -1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120%;
+        height: 120%;
+        background: radial-gradient(circle, 
+            rgba(139, 92, 246, 0.08) 0%, 
+            rgba(139, 92, 246, 0.05) 30%,
+            rgba(139, 92, 246, 0) 70%
+        );
+        border-radius: 50%;
+        z-index: -1;
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.1);
+            opacity: 0.8;
+        }
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
+        .hero-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 40px;
+        }
+
+        .hero-text {
+            max-width: 100%;
+        }
+
+        .hero-text h1 {
+            font-size: 2.8rem;
+        }
+
+        .hero-image {
+            width: 400px;
+            height: 400px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-text h1 {
+            font-size: 2.2rem;
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+        }
+
+        .hero-image {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-white {
+            padding: 0.8rem 1.6rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-text h1 {
+            font-size: 1.8rem;
+        }
+
+        .hero-image {
+            width: 250px;
+            height: 250px;
+        }
     }
 
     /* New Globe Section Styles */
@@ -148,6 +375,78 @@
         height: 400px;
       }
     }
+
+    /* Image Gallery Styles */
+    .image-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 40px 0;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .gallery-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+      padding: 20px;
+      color: white;
+    }
+
+    .gallery-overlay h3 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .gallery-overlay p {
+      margin: 5px 0 0;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+
+    /* Feature Image Styles */
+    .feature-image {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Testimonial Image Styles */
+    .testimonial-author img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
 </style>
 {% endblock %}
 
@@ -193,13 +492,13 @@
   <div class="container">
     <div class="hero-content">
       <div class="hero-text">
-        <h1>AI-Powered Event Management Website</h1>
-        <p>Transform your college events with intelligent automation</p>
+        <h1>India's Premier AI-Powered Event Platform</h1>
+        <p>Transform your college fests and cultural events with intelligent automation</p>
         <button class="btn btn-white">Get Started</button>
       </div>
       <div class="hero-image">
         <div class="glow-effect"></div>
-        <img src="{% static 'images/panda.jpg' %}" alt="Panda with glowing orb">
+        <img src="{% static 'images/panda.jpg' %}" alt="FestGenix Mascot">
       </div>
     </div>
   </div>
@@ -210,12 +509,12 @@
   <div class="globe-container">
     <div class="globe-data">
       <div class="globe-text">
-        <h2 class="globe-heading">Interactive 3D Experience</h2>
-        <p class="globe-sub-head">Explore our virtual event space in an immersive 3D environment.</p>
+        <h2 class="globe-heading">Pan-India Event Network</h2>
+        <p class="globe-sub-head">Connect with colleges and organizations across India.</p>
       </div>
       <div class="globe-text">
-        <h2 class="globe-heading">Virtual Venues</h2>
-        <p class="globe-sub-head">Discover unique virtual venues for your next event.</p>
+        <h2 class="globe-heading">Cultural Integration</h2>
+        <p class="globe-sub-head">Celebrate India's diverse cultural heritage through events.</p>
       </div>
     </div>
     <div class="globe-3d">
@@ -223,8 +522,8 @@
     </div>
     <div class="globe-data">
       <div class="globe-text">
-        <h2 class="globe-heading">Global Reach</h2>
-        <p class="globe-sub-head">Connect with participants from around the world.</p>
+        <h2 class="globe-heading">National Reach</h2>
+        <p class="globe-sub-head">From any corner of world, connect with anyone.</p>
       </div>
       <div class="globe-text">
         <h2 class="globe-heading">Innovative Platform</h2>
@@ -234,12 +533,32 @@
   </div>
 </section>
 
-<!-- Event Highlights -->
-<section class="events">
+<!-- Event Gallery Section -->
+<section class="events-gallery">
   <div class="container">
     <h2>Event Highlights</h2>
-    <div class="events-grid">
-      <!-- Events will be populated by JavaScript -->
+    <div class="image-gallery">
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Cultural Festival">
+        <div class="gallery-overlay">
+          <h3>Cultural Festival</h3>
+          <p>IIT Delhi's Annual Cultural Fest</p>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tech Festival">
+        <div class="gallery-overlay">
+          <h3>Tech Festival</h3>
+          <p>BITS Pilani's Technical Symposium</p>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Sports Event">
+        <div class="gallery-overlay">
+          <h3>Sports Championship</h3>
+          <p>Inter-College Sports Meet</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -248,16 +567,155 @@
 <section class="benefits">
   <div class="container">
     <div class="benefits-grid">
-      <!-- Benefits will be populated by JavaScript -->
+      <div class="benefit-card">
+        <i class="fas fa-robot"></i>
+        <h3>AI-Powered Planning</h3>
+        <p>Smart event planning with AI assistance for better organization and execution.</p>
+      </div>
+      <div class="benefit-card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Analytics Dashboard</h3>
+        <p>Comprehensive analytics to track event performance and engagement.</p>
+      </div>
+      <div class="benefit-card">
+        <i class="fas fa-users"></i>
+        <h3>Community Building</h3>
+        <p>Foster a vibrant community of event organizers and participants.</p>
+      </div>
+      <div class="benefit-card">
+        <i class="fas fa-shield-alt"></i>
+        <h3>Secure Platform</h3>
+        <p>Enterprise-grade security for your event data and transactions.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- Testimonials -->
+<!-- Feature Images Section -->
+<section class="features">
+  <div class="container">
+    <h2>Key Features</h2>
+    <div class="features-grid">
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Smart Scheduling" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
+          <i class="fas fa-calendar-check"></i>
+        </div>
+        <h3>Smart Scheduling</h3>
+        <p>AI-powered scheduling optimization for maximum attendance.</p>
+      </div>
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Digital Ticketing" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
+          <i class="fas fa-ticket-alt"></i>
+        </div>
+        <h3>Digital Ticketing</h3>
+        <p>Seamless ticket management and QR code generation.</p>
+      </div>
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Real-time Communication" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
+          <i class="fas fa-comments"></i>
+        </div>
+        <h3>Real-time Communication</h3>
+        <p>Instant updates and notifications for all participants.</p>
+      </div>
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Feedback System" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
+          <i class="fas fa-poll"></i>
+        </div>
+        <h3>Feedback System</h3>
+        <p>Collect and analyze participant feedback automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
 <section class="testimonials">
   <div class="container">
-    <div class="testimonials-grid">
-      <!-- Testimonials will be populated by JavaScript -->
+    <h2>What Our Users Say</h2>
+    <div class="testimonials-slider">
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"FestGenix revolutionized our college's cultural fest. The AI features helped us manage 5000+ participants seamlessly!"</p>
+        </div>
+        <div class="testimonial-author">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Priya Sharma">
+          <div class="author-info">
+            <h4>Priya Sharma</h4>
+            <p>Cultural Secretary, IIT Delhi</p>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-content">
+          <p>"The platform's analytics helped us increase event attendance by 40% and streamline our tech fest!"</p>
+        </div>
+        <div class="testimonial-author">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Arjun Patel">
+          <div class="author-info">
+            <h4>Arjun Patel</h4>
+            <p>Technical Head, BITS Pilani</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+  <div class="container">
+    <div class="cta-content">
+      <h2>Ready to Transform Your College Events?</h2>
+      <p>Join thousands of successful event organizers across India who trust FestGenix</p>
+      <div class="cta-buttons">
+        <a href="{% url 'base:signup' %}" class="btn btn-primary">Get Started Free</a>
+        <a href="#contact" class="btn btn-outline">Contact Sales</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact">
+  <div class="container">
+    <h2>Get in Touch</h2>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <h3>Email</h3>
+          <p>support@festgenix.in</p>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-phone"></i>
+          <h3>Phone</h3>
+          <p>+91 98765 43210</p>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <h3>Location</h3>
+          <p>123 Tech Park, Bangalore, Karnataka</p>
+        </div>
+      </div>
+      <div class="contact-form">
+        <form method="post">
+          {% csrf_token %}
+          <div class="form-group">
+            <input type="text" name="name" placeholder="Your Name" required>
+          </div>
+          <div class="form-group">
+            <input type="email" name="email" placeholder="Your Email" required>
+          </div>
+          <div class="form-group">
+            <textarea name="message" placeholder="Your Message" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+      </div>
     </div>
   </div>
 </section>
@@ -266,10 +724,35 @@
 <footer class="footer">
   <div class="container">
     <div class="footer-grid">
-      <!-- Footer content will be populated by JavaScript -->
+      <div class="footer-section">
+        <h3>About FestGenix</h3>
+        <p>Revolutionizing event management with AI-powered solutions for Indian colleges and organizations.</p>
+      </div>
+      <div class="footer-section">
+        <h3>Quick Links</h3>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h3>Connect With Us</h3>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 FestGenix. All rights reserved.</p>
     </div>
   </div>
 </footer>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -324,6 +807,23 @@
     // Create 200 stars when the page loads
     window.addEventListener('load', () => {
       createStars(200);
+    });
+
+    // Initialize testimonials slider
+    document.addEventListener('DOMContentLoaded', function() {
+      const slider = new Swiper('.testimonials-slider', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        loop: true,
+        autoplay: {
+          delay: 5000,
+          disableOnInteraction: false,
+        },
+        pagination: {
+          el: '.swiper-pagination',
+          clickable: true,
+        },
+      });
     });
 </script>
 {% endblock %} 

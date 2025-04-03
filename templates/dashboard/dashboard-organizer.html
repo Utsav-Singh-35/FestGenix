@@ -2,264 +2,105 @@
 {% load static %}
 
 {% block dashboard_content %}
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-            <a href="{% url 'base:home' %}" class="sidebar-logo">EventAI</a>
-      </div>
-      
-      <nav class="sidebar-nav">
-            <p class="sidebar-nav-title">OVERVIEW</p>
-        <ul class="sidebar-nav-links">
-          <li>
-            <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-nav-link active">
-              <i data-feather="grid"></i>
-              Dashboard
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'base:events_dashboard' %}" class="sidebar-nav-link">
-              <i data-feather="calendar"></i>
-              Events
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'base:team_dashboard' %}" class="sidebar-nav-link">
-              <i data-feather="users"></i>
-              Team
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'base:budget_dashboard' %}" class="sidebar-nav-link">
-              <i data-feather="dollar-sign"></i>
-              Budget
-            </a>
-          </li>
-        </ul>
-        
-            <p class="sidebar-nav-title">ANALYTICS</p>
-        <ul class="sidebar-nav-links">
-          <li>
-            <a href="{% url 'base:reports_dashboard' %}" class="sidebar-nav-link">
-              <i data-feather="bar-chart-2"></i>
-              Reports
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'base:attendance_dashboard' %}" class="sidebar-nav-link">
-                        <i data-feather="check-square"></i>
-              Attendance
-            </a>
-          </li>
-        </ul>
-        
-            <p class="sidebar-nav-title">ACCOUNT</p>
-        <ul class="sidebar-nav-links">
-          <li>
-            <a href="{% url 'base:settings_dashboard' %}" class="sidebar-nav-link">
-              <i data-feather="settings"></i>
-              Settings
-            </a>
-          </li>
-            </ul>
-
-            <a href="{% url 'base:logout' %}" class="logout-link">
-              <i data-feather="log-out"></i>
-              Logout
-            </a>
-      </nav>
-    </aside>
-    
-    <!-- Main Content -->
-    <main class="dashboard-main">
-        <header class="dashboard-header">
-        <h1 class="dashboard-title">Organizer Dashboard</h1>
-            <button class="event-button" onclick="location.href='{% url 'base:events_dashboard' %}'">
-          <i data-feather="plus"></i>
-          Create New Event
+    <div class="dashboard-header">
+        <h1>Organizer Dashboard</h1>
+        <button class="btn-create-event">
+            <i data-feather="plus"></i>
+            Create New Event
         </button>
-        </header>
-      
-        <!-- Stats Grid -->
-        <div class="dashboard-grid">
-          <div class="dashboard-stat">
-            <div class="dashboard-stat-header">
-              <div class="dashboard-stat-icon">
-                <i data-feather="calendar"></i>
-              </div>
-              <div>
-                <div class="dashboard-stat-title">Total Events</div>
-                <div class="dashboard-stat-value">24</div>
-              </div>
+    </div>
+    
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stats-card">
+            <i data-feather="calendar" class="icon"></i>
+            <div class="content">
+                <div class="label">Total Events</div>
+                <div class="value">24</div>
             </div>
-          </div>
-          
-          <div class="dashboard-stat">
-            <div class="dashboard-stat-header">
-              <div class="dashboard-stat-icon">
-                <i data-feather="user-check"></i>
-              </div>
-              <div>
-                <div class="dashboard-stat-title">Total Participants</div>
-                <div class="dashboard-stat-value">1,248</div>
-              </div>
-            </div>
-          </div>
-          
-          <div class="dashboard-stat">
-            <div class="dashboard-stat-header">
-              <div class="dashboard-stat-icon">
-                <i data-feather="dollar-sign"></i>
-              </div>
-              <div>
-                <div class="dashboard-stat-title">Budget Utilized</div>
-                <div class="dashboard-stat-value">$18,400</div>
-              </div>
-            </div>
-          </div>
         </div>
         
-        <!-- Budget Overview -->
-        <div class="dashboard-grid grid-mt">
-          <div class="dashboard-card grid-span-2">
-            <div class="dashboard-card-header">
-              <h2 class="dashboard-card-title">Budget Overview</h2>
-              <a href="#" class="dashboard-card-action">
+        <div class="stats-card">
+            <i data-feather="users" class="icon"></i>
+            <div class="content">
+                <div class="label">Total Participants</div>
+                <div class="value">1,248</div>
+            </div>
+        </div>
+        
+        <div class="stats-card">
+            <i data-feather="dollar-sign" class="icon"></i>
+            <div class="content">
+                <div class="label">Budget Utilized</div>
+                <div class="value">$18,400</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Budget Overview -->
+    <div class="budget-overview">
+        <div class="header">
+            <h2 class="title">Budget Overview</h2>
+            <a href="#" class="export-btn">
                 <i data-feather="download"></i>
                 Export
-              </a>
+            </a>
+        </div>
+        <div class="stats">
+            <div class="budget-stat">
+                <div class="label">Total Budget</div>
+                <div class="value">$25,000</div>
             </div>
-            <div>
-              <div class="budget-stats">
-                <div class="budget-stat-item">
-                  <div class="budget-stat-label">Total Budget</div>
-                  <div class="budget-stat-value">$25,000</div>
-                </div>
-                <div class="budget-stat-item">
-                  <div class="budget-stat-label">Spent</div>
-                  <div class="budget-stat-value">$18,400</div>
-                </div>
-                <div class="budget-stat-item">
-                  <div class="budget-stat-label">Remaining</div>
-                  <div class="budget-stat-value">$6,600</div>
-                </div>
-              </div>
-              <div class="chart-container">
-                <canvas id="budgetChart"></canvas>
-              </div>
+            <div class="budget-stat">
+                <div class="label">Spent</div>
+                <div class="value">$18,400</div>
             </div>
-          </div>
-          
-          <div class="dashboard-card">
-            <div class="dashboard-card-header">
-              <h2 class="dashboard-card-title">Team Members</h2>
-              <a href="#" class="dashboard-card-action">View All</a>
+            <div class="budget-stat">
+                <div class="label">Remaining</div>
+                <div class="value">$6,600</div>
             </div>
-            <div>
-              <div class="team-member-container">
-                <div class="team-member-left">
-                  <div class="team-member-avatar">
-                    <i data-feather="user"></i>
-                  </div>
-                  <div class="team-member-info">
-                    <div class="team-member-name">Alex Johnson</div>
-                    <div class="team-member-role">Logistics</div>
-                  </div>
-                </div>
-                <div class="team-member-status status-active">Active</div>
-              </div>
-              
-              <div class="team-member-container">
-                <div class="team-member-left">
-                  <div class="team-member-avatar">
-                    <i data-feather="user"></i>
-                  </div>
-                  <div class="team-member-info">
-                    <div class="team-member-name">Sarah Parker</div>
-                    <div class="team-member-role">Marketing</div>
-                  </div>
-                </div>
-                <div class="team-member-status status-active">Active</div>
-              </div>
-              
-              <div class="team-member-container">
-                <div class="team-member-left">
-                  <div class="team-member-avatar">
-                    <i data-feather="user"></i>
-                  </div>
-                  <div class="team-member-info">
-                    <div class="team-member-name">Michael Lee</div>
-                    <div class="team-member-role">Technical</div>
-                  </div>
-                </div>
-                <div class="team-member-status status-on-leave">On Leave</div>
-              </div>
+        </div>
+    </div>
+    
+    <!-- Team Members -->
+    <div class="team-members">
+        <div class="header">
+            <h2 class="title">Team Members</h2>
+            <a href="#" class="view-all">View All</a>
+        </div>
+        <div class="team-member">
+            <div class="member-avatar">
+                <i data-feather="user"></i>
             </div>
-          </div>
+            <div class="member-info">
+                <h4 class="member-name">Alex Johnson</h4>
+                <p class="member-role">Logistics</p>
+            </div>
+            <span class="status-indicator">Active</span>
         </div>
         
-        <!-- Analytics Section -->
-        <div class="dashboard-grid grid-mt">
-          <div class="dashboard-card grid-span-2">
-            <div class="dashboard-card-header">
-              <h2 class="dashboard-card-title">Registration Trend</h2>
-              <div class="analytics-header">
-                <select class="time-select" title="Time period" aria-label="Select time period">
-                  <option>Last 30 days</option>
-                  <option>Last 60 days</option>
-                  <option>Last 90 days</option>
-                </select>
-                <a href="#" class="dashboard-card-action">
-                  <i data-feather="download"></i>
-                  Export
-                </a>
-              </div>
+        <div class="team-member">
+            <div class="member-avatar">
+                <i data-feather="user"></i>
             </div>
-            <div class="chart-container" style="height: 300px;">
-              <canvas id="registrationChart"></canvas>
+            <div class="member-info">
+                <h4 class="member-name">Sarah Parker</h4>
+                <p class="member-role">Marketing</p>
             </div>
-          </div>
-          
-          <div class="dashboard-card">
-            <div class="dashboard-card-header">
-              <h2 class="dashboard-card-title">Engagement Metrics</h2>
-              <a href="#" class="dashboard-card-action">Details</a>
-            </div>
-            
-            <div>
-              <div class="metric-container">
-                <div class="metric-header">
-                  <span class="metric-label">Satisfaction Rate</span>
-                  <span class="metric-value">92%</span>
-                </div>
-                <div class="metric-bar">
-                  <div class="metric-bar-fill" style="width: 92%"></div>
-                </div>
-              </div>
-              
-              <div class="metric-container">
-                <div class="metric-header">
-                  <span class="metric-label">Attendance Rate</span>
-                  <span class="metric-value">87%</span>
-                </div>
-                <div class="metric-bar">
-                  <div class="metric-bar-fill" style="width: 87%"></div>
-                </div>
-              </div>
-              
-              <div class="metric-container">
-                <div class="metric-header">
-                  <span class="metric-label">Social Shares</span>
-                  <span class="metric-value">65%</span>
-                </div>
-                <div class="metric-bar">
-                  <div class="metric-bar-fill" style="width: 65%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
+            <span class="status-indicator">Active</span>
         </div>
-    </main>
+        
+        <div class="team-member">
+            <div class="member-avatar">
+                <i data-feather="user"></i>
+            </div>
+            <div class="member-info">
+                <h4 class="member-name">Michael Lee</h4>
+                <p class="member-role">Technical</p>
+            </div>
+            <span class="status-indicator">Active</span>
+        </div>
+    </div>
 {% endblock %}
 
 {% block extra_css %}
@@ -455,7 +296,7 @@
     /* Main Content Styles */
     .dashboard-main {
         flex: 1;
-        margin-left: 280px;
+        /* margin-left: 280px; */
         padding: 2rem;
         background-color: var(--dark-bg);
     }

@@ -2,12 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, EventForm
 from .models import CustomUser, Event, Team, Budget, Report, Attendance, Task, Skill, Interest
 from django.db import models
 from django.db.models import Sum, F, Count
 from django.utils import timezone
 from datetime import timedelta
+from django.http import HttpResponse
+import qrcode
+import io
+from datetime import datetime
 
 def calculate_roi_data(events):
     """
@@ -448,15 +452,21 @@ def participant_explore(request):
         messages.error(request, 'Access denied. Participant privileges required.')
         return redirect('base:login')
     
+    # Get all published events by organizers
+    events = Event.objects.filter(
+        start_date__gte=timezone.now(),
+        status='published'
+    ).exclude(attendees=request.user).select_related('organizer').order_by('start_date')
+    
+    # Get recommended events (for now, just random selection)
+    recommended_events = Event.objects.filter(
+        start_date__gte=timezone.now(),
+        status='published'
+    ).exclude(attendees=request.user).select_related('organizer').order_by('?')[:5]
+    
     context = {
-        'upcoming_events': Event.objects.filter(
-            start_date__gte=timezone.now(),
-            status='published'
-        ).exclude(attendees=request.user).order_by('start_date'),
-        'recommended_events': Event.objects.filter(
-            start_date__gte=timezone.now(),
-            status='published'
-        ).exclude(attendees=request.user).order_by('?')[:5]  # Random selection for now
+        'events': events,
+        'recommended_events': recommended_events
     }
     return render(request, 'dashboard/dashboard-participant-explore.html', context)
 
@@ -565,6 +575,23 @@ def participant_settings(request):
     }
     return render(request, 'dashboard/dashboard-participant-settings.html', context)
 
+@login_required
+def participant_event_detail(request, event_id):
+    if request.user.role != CustomUser.Role.PARTICIPANT:
+        messages.error(request, 'Access denied. Participant privileges required.')
+        return redirect('base:login')
+    
+    try:
+        event = Event.objects.get(id=event_id, status='published')
+    except Event.DoesNotExist:
+        messages.error(request, "Event not found.")
+        return redirect('base:participant_explore')
+    
+    context = {
+        'event': event,
+    }
+    return render(request, 'dashboard/dashboard-participant-event-detail.html', context)
+
 def home(request):
     if request.user.is_authenticated:
         # Redirect to appropriate dashboard based on role
@@ -580,7 +607,24 @@ def home(request):
 
 @login_required
 def events_dashboard(request):
-    return render(request, 'dashboard/dashboard-events.html')
+    events = Event.objects.all()
+    now = timezone.now()
+    
+    # Calculate event statistics
+    total_events = events.count()
+    upcoming_events = events.filter(start_date__gt=now).count()
+    completed_events = events.filter(start_date__lt=now).count()
+    total_attendees = sum(event.attendees.count() for event in events)
+    
+    context = {
+        'events': events,
+        'form': EventForm(),
+        'total_events': total_events,
+        'upcoming_events': upcoming_events,
+        'completed_events': completed_events,
+        'total_attendees': total_attendees,
+    }
+    return render(request, 'dashboard/dashboard-events.html', context)
 
 @login_required
 def reports_dashboard(request):
@@ -613,4 +657,124 @@ def budget_dashboard(request):
         messages.error(request, 'Access denied. Organizer privileges required.')
         return redirect('base:login')
     return render(request, 'dashboard/dashboard-budget.html')
+
+@login_required
+def event_detail(request, event_id):
+    if request.user.role != CustomUser.Role.ORGANIZER:
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('base:login')
+    
+    try:
+        event = Event.objects.get(id=event_id, organizer=request.user)
+    except Event.DoesNotExist:
+        messages.error(request, "Event not found.")
+        return redirect('base:events_dashboard')
+    
+    context = {
+        'event': event,
+    }
+    return render(request, 'dashboard/dashboard-event-detail.html', context)
+
+@login_required
+def event_edit(request, event_id):
+    if request.user.role != CustomUser.Role.ORGANIZER:
+        messages.error(request, "You don't have permission to access this page.")
+        return redirect('base:login')
+    
+    try:
+        event = Event.objects.get(id=event_id, organizer=request.user)
+    except Event.DoesNotExist:
+        messages.error(request, "Event not found.")
+        return redirect('base:events_dashboard')
+    
+    if request.method == 'POST':
+        form = EventForm(request.POST, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Event updated successfully!')
+            return redirect('base:event_detail', event_id=event.id)
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = EventForm(instance=event)
+    
+    context = {
+        'form': form,
+        'event': event,
+    }
+    return render(request, 'dashboard/dashboard-event-edit.html', context)
+
+@login_required
+def create_event(request):
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save()
+            messages.success(request, 'Event created successfully!')
+            return redirect('base:events_dashboard')
+    return redirect('base:events_dashboard')
+
+def generate_event_qr(request, event_id):
+    try:
+        event = Event.objects.get(id=event_id)
+        
+        # Format event data for QR code
+        qr_data = f"""
+FestGenix Event Registration
+--------------------------
+Event: {event.title}
+Date: {event.start_date.strftime('%B %d, %Y')}
+Time: {event.start_date.strftime('%I:%M %p')}
+Location: {event.location}
+Price: {'₹' + str(event.price) if hasattr(event, 'price') and event.price else 'Free'}
+
+Event Details
+------------
+Status: {event.status}
+Capacity: {event.attendees.count}/{event.capacity}
+
+Organizer Information
+------------------
+Name: {event.organizer.full_name}
+Email: {event.organizer.email}
+
+Registration Instructions
+----------------------
+1. Scan this QR code
+2. Complete the registration form
+3. Show this QR code at the event entrance
+
+Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+"""
+        
+        # Generate QR code with better error correction
+        qr = qrcode.QRCode(
+            version=None,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=10,
+            border=4,
+        )
+        
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        
+        # Create QR code image with better contrast
+        qr_img = qr.make_image(fill="black", back_color="white")
+        
+        # Save to Bytes buffer
+        img_io = io.BytesIO()
+        qr_img.save(img_io, format="PNG")
+        img_io.seek(0)
+        
+        response = HttpResponse(img_io, content_type='image/png')
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
+        
+    except Event.DoesNotExist:
+        return HttpResponse("Event not found", status=404)
+    except Exception as e:
+        print(f"Error generating QR code: {str(e)}")  # For debugging
+        return HttpResponse(f"Error generating QR code: {str(e)}", status=500)
 

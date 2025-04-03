@@ -1,94 +1,134 @@
-{% extends "base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FestGenix - Event Management Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <a href="{% url 'base:organizer_dashboard' %}" class="sidebar-brand">
+                <i data-feather="zap"></i>
+                FestGenix
+            </a>
 
-{% block content %}
-<div class="dashboard">
-    {% block dashboard_content %}{% endblock %}
-</div>
-{% endblock %}
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">OVERVIEW</h3>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="{% url 'base:organizer_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'organizer_dashboard' %}active{% endif %}">
+                            <i data-feather="grid"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'base:events_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'events_dashboard' %}active{% endif %}">
+                            <i data-feather="calendar"></i>
+                            Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'base:team_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'team_dashboard' %}active{% endif %}">
+                            <i data-feather="users"></i>
+                            Team
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'base:budget_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'budget_dashboard' %}active{% endif %}">
+                            <i data-feather="dollar-sign"></i>
+                            Budget
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-{% block extra_css %}
-<style>
-    /* Dashboard styles */
-    .dashboard {
-        position: relative;
-        min-height: 100vh;
-        width: 100%;
-        overflow-x: hidden;
-    }
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">ANALYTICS</h3>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="{% url 'base:reports_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'reports_dashboard' %}active{% endif %}">
+                            <i data-feather="bar-chart-2"></i>
+                            Reports
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'base:attendance_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'attendance_dashboard' %}active{% endif %}">
+                            <i data-feather="check-square"></i>
+                            Attendance
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-    /* Ensure proper stacking for dashboard elements */
-    .sidebar {
-        z-index: 100;
-    }
+            <div class="sidebar-section">
+                <h3 class="sidebar-section-title">ACCOUNT</h3>
+                <ul class="sidebar-nav">
+                    <li class="nav-item">
+                        <a href="{% url 'base:settings_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'settings_dashboard' %}active{% endif %}">
+                            <i data-feather="settings"></i>
+                            Settings
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'base:logout' %}" class="nav-link logout">
+                            <i data-feather="log-out"></i>
+                            Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-    .dashboard-main {
-        z-index: 50;
-    }
+            {% if team_members %}
+            <div class="team-members-section">
+                <div class="section-header">
+                    <h3 class="section-title">Team Members</h3>
+                    <a href="{% url 'base:team_dashboard' %}" class="section-action">View All</a>
+                </div>
+                {% for member in team_members %}
+                <div class="team-member">
+                    <div class="member-avatar">
+                        {% if member.avatar %}
+                        <img src="{{ member.avatar.url }}" alt="{{ member.name }}" width="40" height="40">
+                        {% else %}
+                        <i data-feather="user"></i>
+                        {% endif %}
+                    </div>
+                    <div class="member-info">
+                        <h4 class="member-name">{{ member.name }}</h4>
+                        <p class="member-role">{{ member.role }}</p>
+                    </div>
+                    <span class="status-indicator active">Active</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </aside>
 
-    /* Override any conflicting styles */
-    #chatbot-container {
-        position: fixed !important;
-        z-index: 2147483647 !important;
-        pointer-events: none !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    .chatbot-button {
-        pointer-events: auto !important;
-        z-index: 2147483647 !important;
-        position: fixed !important;
-        bottom: 30px !important;
-        right: 30px !important;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    .chatbot-modal {
-        pointer-events: auto !important;
-        z-index: 2147483646 !important;
-    }
-
-    /* Fix stacking context */
-    body {
-        isolation: isolate;
-    }
-
-    /* Ensure sidebar doesn't overlap */
-    .sidebar {
-        isolation: isolate;
-        z-index: 1000;
-    }
-</style>
-{% endblock %}
-
-{% block extra_js %}
-{{ block.super }}
-<script>
-    // Ensure chatbot is properly positioned
-    document.addEventListener('DOMContentLoaded', function() {
-        // Force reflow of chatbot container
-        const chatbotContainer = document.getElementById('chatbot-container');
-        if (chatbotContainer) {
-            chatbotContainer.style.display = 'none';
-            void chatbotContainer.offsetHeight; // Force reflow
-            chatbotContainer.style.display = '';
+        <main class="main-content">
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
             
-            // Move to body if not already there
-            if (!document.body.contains(chatbotContainer)) {
-                document.body.appendChild(chatbotContainer);
-            }
-        }
+            {% block dashboard_content %}{% endblock %}
+        </main>
+    </div>
 
-        // Ensure button is visible
-        const chatbotButton = document.querySelector('.chatbot-button');
-        if (chatbotButton) {
-            chatbotButton.style.visibility = 'visible';
-            chatbotButton.style.opacity = '1';
-        }
-    });
-</script>
-{% endblock %} 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+        });
+    </script>
+</body>
+</html> 

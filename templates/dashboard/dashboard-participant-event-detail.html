@@ -1,0 +1,577 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block dashboard_content %}
+<div class="dashboard-wrapper">
+    <div class="main-content">
+        <div class="content-header">
+            <h1>Event Details</h1>
+            <a href="{% url 'base:participant_explore' %}" class="btn btn-secondary">
+                <i data-feather="arrow-left"></i> Back to Events
+            </a>
+        </div>
+
+        <div class="event-detail-container">
+            <!-- Event Header -->
+            <div class="event-header-section">
+                <div class="event-header-content">
+                    <div class="event-title-group">
+                        <h2>{{ event.title }}</h2>
+                        <div class="event-meta">
+                            <span class="event-date">
+                                <i data-feather="calendar"></i>
+                                {{ event.start_date|date:"F j, Y" }}
+                            </span>
+                            <span class="event-time">
+                                <i data-feather="clock"></i>
+                                {{ event.start_date|time:"g:i A" }}
+                            </span>
+                            <span class="event-location">
+                                <i data-feather="map-pin"></i>
+                                {{ event.location }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="event-status-badge {{ event.status|lower }}">
+                        {{ event.status }}
+                    </div>
+                </div>
+                <div class="event-tags">
+                    {% if event.category %}
+                        <span class="event-tag tag-{{ event.category|lower }}">{{ event.category }}</span>
+                    {% endif %}
+                    {% if event.event_type %}
+                        <span class="event-tag tag-{{ event.event_type|lower }}">{{ event.event_type }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Event Content -->
+            <div class="event-content-grid">
+                <!-- Main Content -->
+                <div class="event-main-content">
+                    <div class="event-description">
+                        <h3>About This Event</h3>
+                        <p>{{ event.description }}</p>
+                    </div>
+
+                    <div class="event-schedule">
+                        <h3>Schedule</h3>
+                        <div class="schedule-item">
+                            <div class="schedule-time">
+                                <i data-feather="clock"></i>
+                                {{ event.start_date|time:"g:i A" }}
+                            </div>
+                            <div class="schedule-content">
+                                <h4>Event Start</h4>
+                                <p>Doors open and registration begins</p>
+                            </div>
+                        </div>
+                        <!-- Add more schedule items as needed -->
+                    </div>
+
+                    <div class="event-requirements">
+                        <h3>Requirements</h3>
+                        <ul>
+                            <li>Valid ID for registration</li>
+                            <li>Comfortable clothing</li>
+                            <li>Notebook and pen (optional)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="event-sidebar">
+                    <div class="event-card">
+                        <div class="event-price">
+                            {% if event.price %}
+                                <span class="price-amount">₹{{ event.price }}</span>
+                            {% else %}
+                                <span class="price-amount">Free</span>
+                            {% endif %}
+                        </div>
+                        <div class="event-capacity">
+                            <i data-feather="users"></i>
+                            <span>{{ event.attendees.count }}/{{ event.capacity }} attendees</span>
+                        </div>
+                        <div class="event-organizer">
+                            <div class="organizer-info">
+                                <i data-feather="user"></i>
+                                <span>Organized by {{ event.organizer.full_name }}</span>
+                            </div>
+                        </div>
+                        <div class="sidebar-actions">
+                            <a href="{% url 'base:participant_explore' %}" class="btn btn-secondary">
+                                <i data-feather="list"></i> View All Events
+                            </a>
+                            <button class="btn btn-primary register-button" onclick="showQRCode('{{ event.id }}')">
+                                <i data-feather="user-plus"></i> Register Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- QR Code Modal -->
+<div id="qrCodeModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Scan QR Code to Register</h2>
+        <div class="qr-container">
+            <div class="loading-spinner"></div>
+            <img id="qrCodeImage" src="" alt="Registration QR Code">
+        </div>
+        <p class="qr-instructions">Scan this QR code with your mobile device to complete registration</p>
+        <button class="btn btn-primary" onclick="downloadQRCode()">Download QR Code</button>
+    </div>
+</div>
+
+<style>
+:root {
+    --dark-bg: #0B1121;
+    --dark-card: #111827;
+    --dark-border: #1F2937;
+    --dark-text: #F9FAFB;
+    --dark-text-secondary: #9CA3AF;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --success: #22c55e;
+    --warning: #eab308;
+    --danger: #ef4444;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.content-header h1 {
+    color: var(--dark-text);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--dark-text);
+    width: 100%;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+}
+
+.btn-secondary {
+    background: var(--dark-card);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-border);
+}
+
+.btn-secondary:hover {
+    background: var(--dark-border);
+}
+
+.event-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.event-header-section {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.event-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.event-title-group h2 {
+    color: var(--dark-text);
+    font-size: 1.875rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+}
+
+.event-meta {
+    display: flex;
+    gap: 1.5rem;
+    color: var(--dark-text-secondary);
+    font-size: 0.875rem;
+}
+
+.event-meta span {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.event-meta i {
+    width: 1rem;
+    height: 1rem;
+}
+
+.event-status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.event-status-badge.upcoming {
+    background: var(--primary);
+    color: var(--dark-text);
+}
+
+.event-status-badge.ongoing {
+    background: var(--success);
+    color: var(--dark-text);
+}
+
+.event-status-badge.completed {
+    background: var(--dark-border);
+    color: var(--dark-text-secondary);
+}
+
+.event-status-badge.cancelled {
+    background: var(--danger);
+    color: var(--dark-text);
+}
+
+.event-tags {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.event-tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.tag-technology {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+}
+
+.tag-arts {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+}
+
+.tag-business {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+}
+
+.event-content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+.event-main-content {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    padding: 2rem;
+}
+
+.event-main-content h3 {
+    color: var(--dark-text);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 1.5rem 0;
+}
+
+.event-description p {
+    color: var(--dark-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.schedule-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--dark-bg);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.schedule-time {
+    color: var(--primary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.schedule-content h4 {
+    color: var(--dark-text);
+    margin: 0 0 0.25rem 0;
+}
+
+.schedule-content p {
+    color: var(--dark-text-secondary);
+    margin: 0;
+}
+
+.event-requirements ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.event-requirements li {
+    color: var(--dark-text-secondary);
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.event-requirements li::before {
+    content: "•";
+    color: var(--primary);
+}
+
+.event-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.event-card {
+    background: var(--dark-card);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.event-price {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.price-amount {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.event-capacity {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dark-text-secondary);
+    margin-bottom: 1rem;
+}
+
+.event-organizer {
+    padding: 1rem 0;
+    border-top: 1px solid var(--dark-border);
+    margin-bottom: 0;
+    border-bottom: none;
+}
+
+.organizer-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--dark-text-secondary);
+}
+
+.sidebar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    border-top: 1px solid var(--dark-border);
+    padding-top: 1.5rem;
+}
+
+.sidebar-actions .btn {
+    justify-content: center;
+}
+
+.register-button {
+    margin-top: 1rem;
+}
+
+@media (max-width: 768px) {
+    .event-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .event-header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .event-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Updated Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: var(--dark-card);
+    margin: 10% auto;
+    padding: 2rem;
+    border: 1px solid var(--dark-border);
+    border-radius: 0.75rem;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.loading-spinner {
+    display: none;
+    width: 40px;
+    height: 40px;
+    margin: 20px auto;
+    border: 4px solid var(--dark-border);
+    border-top: 4px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.qr-container {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 0.5rem;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 200px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-container img {
+    max-width: 200px;
+    height: auto;
+    display: none;
+}
+
+.qr-instructions {
+    color: var(--dark-text-secondary);
+    margin: 1.5rem 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Utility Classes */
+.mt-3 {
+    margin-top: 1rem;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    feather.replace();
+});
+
+function showQRCode(eventId) {
+    const modal = document.getElementById('qrCodeModal');
+    const qrImage = document.getElementById('qrCodeImage');
+    const loadingSpinner = document.querySelector('.loading-spinner');
+    
+    // Show loading spinner
+    loadingSpinner.style.display = 'block';
+    qrImage.style.display = 'none';
+    
+    // Generate QR code URL for the event registration
+    const qrCodeUrl = `{% url 'base:generate_event_qr' 0 %}`.replace('0', eventId);
+    
+    // Set the QR code image source
+    qrImage.src = qrCodeUrl;
+    
+    // Show the modal
+    modal.style.display = "block";
+    
+    // Handle image load
+    qrImage.onload = function() {
+        loadingSpinner.style.display = 'none';
+        qrImage.style.display = 'block';
+    };
+}
+
+function downloadQRCode() {
+    const qrImage = document.getElementById('qrCodeImage');
+    const link = document.createElement('a');
+    link.href = qrImage.src;
+    link.download = 'event-registration-qr.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Close modal when clicking the X button
+document.querySelector('.close').addEventListener('click', function() {
+    document.getElementById('qrCodeModal').style.display = "none";
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('qrCodeModal');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+});
+
+// Add error handling for QR code image
+document.getElementById('qrCodeImage').addEventListener('error', function() {
+    document.getElementById('qrCodeModal').style.display = "none";
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,286 @@
+/* Volunteer Dashboard */
+.volunteer-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.volunteer-stat-card {
+    background: var(--dark-card);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.volunteer-stat-card .icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.volunteer-stat-card .icon i {
+    font-size: 1.5rem;
+    color: var(--primary);
+}
+
+.volunteer-stat-card .content {
+    flex-grow: 1;
+}
+
+.volunteer-stat-card .value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dark-text);
+    margin: 0;
+}
+
+.volunteer-stat-card .label {
+    color: var(--dark-text-secondary);
+    margin: 0;
+}
+
+/* Upcoming Shifts Section */
+.upcoming-shifts {
+    background: var(--dark-card);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.upcoming-shifts .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.upcoming-shifts .header h2 {
+    color: var(--dark-text);
+    margin: 0;
+}
+
+.shift-card {
+    background: var(--dark-bg);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.shift-card .event-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 0.5rem;
+    object-fit: cover;
+}
+
+.shift-card .shift-info {
+    flex-grow: 1;
+}
+
+.shift-card .event-name {
+    color: var(--dark-text);
+    margin: 0 0 0.25rem 0;
+    font-weight: 500;
+}
+
+.shift-card .shift-time {
+    color: var(--dark-text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.shift-card .shift-role {
+    color: var(--primary);
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.shift-card .status-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+}
+
+.shift-card .status-badge.confirmed {
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success);
+}
+
+.shift-card .status-badge.pending {
+    background: rgba(234, 179, 8, 0.1);
+    color: var(--warning);
+}
+
+/* Available Opportunities */
+.opportunities-section {
+    background: var(--dark-card);
+    border-radius: 1rem;
+    padding: 1.5rem;
+}
+
+.opportunities-section .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.opportunities-section .filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.opportunities-section .filters select {
+    background: var(--dark-bg);
+    color: var(--dark-text);
+    border: 1px solid var(--dark-border);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+.opportunity-card {
+    background: var(--dark-bg);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.opportunity-card .event-banner {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.opportunity-card .content {
+    padding: 1rem;
+}
+
+.opportunity-card .event-title {
+    color: var(--dark-text);
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+}
+
+.opportunity-card .event-details {
+    color: var(--dark-text-secondary);
+    font-size: 0.875rem;
+    margin: 0 0 1rem 0;
+}
+
+.opportunity-card .roles-needed {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.opportunity-card .role-badge {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+}
+
+/* Schedule Calendar */
+.schedule-section {
+    background: var(--dark-card);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-navigation {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.calendar-navigation button {
+    background: var(--dark-bg);
+    border: 1px solid var(--dark-border);
+    color: var(--dark-text);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+}
+
+.calendar-day {
+    background: var(--dark-bg);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    min-height: 100px;
+}
+
+.calendar-day .date {
+    color: var(--dark-text);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.calendar-day .shift-indicator {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 991.98px) {
+    .volunteer-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .calendar-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 767.98px) {
+    .volunteer-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .shift-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .shift-card .event-image {
+        width: 100%;
+        height: 120px;
+    }
+    
+    .calendar-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .opportunities-section .filters {
+        flex-direction: column;
+    }
+} 

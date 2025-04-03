@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from .models import CustomUser
+from .models import CustomUser, Event
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(
@@ -68,4 +68,35 @@ class CustomAuthenticationForm(AuthenticationForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'password') 
+        fields = ('username', 'password')
+
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = ['title', 'description', 'start_date', 'location', 'capacity', 'status']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter event title'
+            }),
+            'description': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter event description',
+                'rows': 4
+            }),
+            'start_date': forms.DateTimeInput(attrs={
+                'class': 'form-control',
+                'type': 'datetime-local'
+            }),
+            'location': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter event location'
+            }),
+            'capacity': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter event capacity'
+            }),
+            'status': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        } 
