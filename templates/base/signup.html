@@ -1,13 +1,209 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Sign Up - FestGenix{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/components.css' %}">
+<style>
+    .signup-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .floating-shapes {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .shape {
+        position: absolute;
+        width: var(--size);
+        height: var(--size);
+        left: var(--x);
+        animation: float var(--duration) linear infinite;
+    }
+
+    .shape.circle {
+        background: rgba(99, 102, 241, 0.1);
+        border-radius: 50%;
+    }
+
+    .shape.ring {
+        border: 2px solid rgba(99, 102, 241, 0.2);
+        border-radius: 50%;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(100vh) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(-100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    .signup-card {
+        background: rgba(51, 73, 171, 0.1);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        margin: 20px;
+        border-radius: 1rem;
+        padding: 2rem;
+        width: 100%;
+
+        max-width: 400px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1;
+    }
+
+    .signup-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .signup-header h1 {
+        color: #fff;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .signup-header p {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        color: #fff;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 0.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        font-size: 1rem;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #6366f1;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group select option {
+        background: #1e293b;
+        color: #fff;
+    }
+
+    .terms-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .terms-group input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    .terms-group label {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+    }
+
+    .signup-btn {
+        width: 100%;
+        padding: 0.75rem;
+        background: #6366f1;
+        color: #fff;
+        border: none;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .signup-btn:hover {
+        background: #4f46e5;
+    }
+
+    .signup-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .signup-footer a {
+        color: #6366f1;
+        text-decoration: none;
+    }
+
+    .signup-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .messages {
+        margin-bottom: 1.5rem;
+    }
+
+    .message {
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .message.error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .message.success {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="login-container">
+<div class="signup-container">
     <!-- Floating Geometric Shapes -->
     <div class="floating-shapes" id="floatingShapes"></div>
 
-    <div class="login-card">
-        <div class="login-header">
+    <div class="signup-card">
+        <div class="signup-header">
             <h1>Create Account</h1>
             <p>Join FestGenix to explore amazing events</p>
         </div>
@@ -22,7 +218,7 @@
         </div>
         {% endif %}
 
-        <form class="login-form" method="POST">
+        <form class="signup-form" method="POST">
             {% csrf_token %}
             <div class="form-group">
                 <label for="id_full_name">Full Name</label>
@@ -50,9 +246,9 @@
                     <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
                 </label>
             </div>
-            <button type="submit" class="login-btn">Create Account</button>
+            <button type="submit" class="signup-btn">Create Account</button>
         </form>
-        <div class="login-footer">
+        <div class="signup-footer">
             <p>Already have an account? <a href="{% url 'base:login' %}">Sign in</a></p>
         </div>
     </div>

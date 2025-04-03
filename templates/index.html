@@ -13,38 +13,265 @@
 <script src="{% static 'js/components.js' %}"></script>
 <script src="{% static 'js/main.js' %}"></script>
 <style>
+    /* Enhanced Hero Section Styles */
+    .hero {
+        position: relative;
+        min-height: 100vh;
+        background: linear-gradient(135deg, 
+            #1a1b2e 0%, 
+            #2d1b3d 25%, 
+            #1e1b4b 50%, 
+            #312e81 75%, 
+            #3730a3 100%
+        );
+        overflow: hidden;
+        padding: 80px 0;
+    }
+
+    .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1511795409834-43254d8b6e75?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80') center/cover;
+        opacity: 0.04;
+        animation: zoomInOut 20s infinite alternate;
+        mix-blend-mode: overlay;
+    }
+
+    .hero::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 50% 50%, 
+            rgba(139, 92, 246, 0.1) 0%,
+            rgba(139, 92, 246, 0.05) 25%,
+            rgba(139, 92, 246, 0) 50%
+        );
+        pointer-events: none;
+    }
+
+    @keyframes zoomInOut {
+        0% {
+            transform: scale(1);
+        }
+        100% {
+            transform: scale(1.1);
+        }
+    }
+
     .hero .container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 90vh;
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: calc(100vh - 160px);
+        padding: 0 20px;
     }
+
+    .hero-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 60px;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .hero-text {
+        flex: 1;
+        max-width: 600px;
+        color: #fff;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-text h1 {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, 
+            #ffffff 0%, 
+            #c4b5fd 50%, 
+            #a78bfa 100%
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradientFlow 8s linear infinite;
+    }
+
+    @keyframes gradientFlow {
+        0% {
+            background-position: 0% 50%;
+        }
+        100% {
+            background-position: 100% 50%;
+        }
+    }
+
+    .hero-text p {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.8);
+        margin-bottom: 2rem;
+    }
+
+    .btn-white {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: rgba(139, 92, 246, 0.1);
+        border: 2px solid rgba(139, 92, 246, 0.2);
+        border-radius: 50px;
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-white:hover {
+        background: rgba(139, 92, 246, 0.15);
+        border-color: rgba(139, 92, 246, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
     .hero-image {
-      position: relative;
-      width: 400px;
-      height: 400px;
-      margin: 0 auto;
+        position: relative;
+        width: 500px;
+        height: 500px;
+        animation: float 6s ease-in-out infinite;
     }
-    
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
     .hero-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 8px solid #fff;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 8px solid rgba(139, 92, 246, 0.1);
+        box-shadow: 
+            0 0 30px rgba(139, 92, 246, 0.08),
+            0 0 60px rgba(139, 92, 246, 0.05);
+        transition: all 0.3s ease;
     }
-    
+
+    .hero-image:hover img {
+        border-color: rgba(139, 92, 246, 0.15);
+        box-shadow: 
+            0 0 40px rgba(139, 92, 246, 0.12),
+            0 0 80px rgba(139, 92, 246, 0.08);
+        transform: scale(1.02);
+    }
+
     .glow-effect {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 120%;
-      height: 120%;
-      background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0) 70%);
-      border-radius: 50%;
-      z-index: -1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 120%;
+        height: 120%;
+        background: radial-gradient(circle, 
+            rgba(139, 92, 246, 0.08) 0%, 
+            rgba(139, 92, 246, 0.05) 30%,
+            rgba(139, 92, 246, 0) 70%
+        );
+        border-radius: 50%;
+        z-index: -1;
+        animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translate(-50%, -50%) scale(1.1);
+            opacity: 0.8;
+        }
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 1024px) {
+        .hero-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 40px;
+        }
+
+        .hero-text {
+            max-width: 100%;
+        }
+
+        .hero-text h1 {
+            font-size: 2.8rem;
+        }
+
+        .hero-image {
+            width: 400px;
+            height: 400px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-text h1 {
+            font-size: 2.2rem;
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+        }
+
+        .hero-image {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-white {
+            padding: 0.8rem 1.6rem;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .hero-text h1 {
+            font-size: 1.8rem;
+        }
+
+        .hero-image {
+            width: 250px;
+            height: 250px;
+        }
     }
 
     /* New Globe Section Styles */
@@ -312,21 +539,21 @@
     <h2>Event Highlights</h2>
     <div class="image-gallery">
       <div class="gallery-item">
-        <img src="{% static 'images/events/cultural-fest.jpg' %}" alt="Cultural Festival">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Cultural Festival">
         <div class="gallery-overlay">
           <h3>Cultural Festival</h3>
           <p>IIT Delhi's Annual Cultural Fest</p>
         </div>
       </div>
       <div class="gallery-item">
-        <img src="{% static 'images/events/tech-fest.jpg' %}" alt="Tech Festival">
+        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Tech Festival">
         <div class="gallery-overlay">
           <h3>Tech Festival</h3>
           <p>BITS Pilani's Technical Symposium</p>
         </div>
       </div>
       <div class="gallery-item">
-        <img src="{% static 'images/events/sports-event.jpg' %}" alt="Sports Event">
+        <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Sports Event">
         <div class="gallery-overlay">
           <h3>Sports Championship</h3>
           <p>Inter-College Sports Meet</p>
@@ -369,33 +596,33 @@
   <div class="container">
     <h2>Key Features</h2>
     <div class="features-grid">
-      <div class="feature-item">
-        <img src="{% static 'images/features/smart-scheduling.jpg' %}" alt="Smart Scheduling" class="feature-image">
-        <div class="feature-icon">
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Smart Scheduling" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
           <i class="fas fa-calendar-check"></i>
         </div>
         <h3>Smart Scheduling</h3>
         <p>AI-powered scheduling optimization for maximum attendance.</p>
       </div>
-      <div class="feature-item">
-        <img src="{% static 'images/features/digital-ticketing.jpg' %}" alt="Digital Ticketing" class="feature-image">
-        <div class="feature-icon">
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Digital Ticketing" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
           <i class="fas fa-ticket-alt"></i>
         </div>
         <h3>Digital Ticketing</h3>
         <p>Seamless ticket management and QR code generation.</p>
       </div>
-      <div class="feature-item">
-        <img src="{% static 'images/features/communication.jpg' %}" alt="Real-time Communication" class="feature-image">
-        <div class="feature-icon">
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Real-time Communication" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
           <i class="fas fa-comments"></i>
         </div>
         <h3>Real-time Communication</h3>
         <p>Instant updates and notifications for all participants.</p>
       </div>
-      <div class="feature-item">
-        <img src="{% static 'images/features/feedback.jpg' %}" alt="Feedback System" class="feature-image">
-        <div class="feature-icon">
+      <div class="feature-item" style="padding: 10px;">
+        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Feedback System" class="feature-image">
+        <div class="feature-icon" style="top: -1px;">
           <i class="fas fa-poll"></i>
         </div>
         <h3>Feedback System</h3>
@@ -415,7 +642,7 @@
           <p>"FestGenix revolutionized our college's cultural fest. The AI features helped us manage 5000+ participants seamlessly!"</p>
         </div>
         <div class="testimonial-author">
-          <img src="{% static 'images/testimonials/priya-sharma.jpg' %}" alt="Priya Sharma">
+          <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Priya Sharma">
           <div class="author-info">
             <h4>Priya Sharma</h4>
             <p>Cultural Secretary, IIT Delhi</p>
@@ -427,7 +654,7 @@
           <p>"The platform's analytics helped us increase event attendance by 40% and streamline our tech fest!"</p>
         </div>
         <div class="testimonial-author">
-          <img src="{% static 'images/testimonial2.jpg' %}" alt="Arjun Patel">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Arjun Patel">
           <div class="author-info">
             <h4>Arjun Patel</h4>
             <p>Technical Head, BITS Pilani</p>

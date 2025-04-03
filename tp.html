@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FestGenix</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #00d4ff;
+            --text-color: #ffffff;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            --hover-transform: translateY(-5px);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            --gradient-dark: linear-gradient(135deg, var(--dark-bg) 0%, var(--card-bg) 100%);
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shape {
+            position: absolute;
+            bottom: -100px;
+            left: var(--x);
+            width: var(--size);
+            height: var(--size);
+            animation: float var(--duration) linear infinite;
+        }
+
+        .circle {
+            background: rgba(37, 99, 235, 0.1);
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 50%;
+        }
+
+        .ring {
+            border: 2px solid rgba(37, 99, 235, 0.1);
+            border-radius: 50%;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .login-card {
+            background: rgba(30, 41, 59, 0.95);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h1 {
+            color: var(--text-color);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--text-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .message {
+            padding: 0.8rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .login-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: var(--transition);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .login-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .login-footer a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="floating-shapes" id="floatingShapes"></div>
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Welcome Back</h1>
+                <p>Sign in to your FestGenix account</p>
+            </div>
+            
+            <div class="messages">
+                <div class="message error">Invalid email or password</div>
+            </div>
+
+            <form class="login-form" method="POST">
+                <div class="form-group">
+                    <label for="id_username">Email</label>
+                    <input type="email" id="id_username" name="username" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="id_password">Password</label>
+                    <input type="password" id="id_password" name="password" required placeholder="Enter your password">
+                </div>
+                <button type="submit" class="login-btn">Sign In</button>
+            </form>
+
+            <div class="login-footer">
+                <p>Don't have an account? <a href="#">Sign up</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to create and animate floating shapes
+        function createFloatingShape() {
+            const shapes = document.getElementById('floatingShapes');
+            const shape = document.createElement('div');
+            
+            // Randomly choose between circle and ring
+            const isCircle = Math.random() > 0.5;
+            shape.className = `shape ${isCircle ? 'circle' : 'ring'}`;
+            
+            // Random size between 80 and 160
+            const size = Math.random() * 80 + 80;
+            shape.style.setProperty('--size', `${size}px`);
+            
+            // Random position
+            const x = Math.random() * 100;
+            shape.style.setProperty('--x', `${x}%`);
+            
+            // Random duration between 7 and 14 seconds
+            const duration = Math.random() * 7 + 7;
+            shape.style.setProperty('--duration', `${duration}s`);
+            
+            shapes.appendChild(shape);
+            
+            // Remove shape after animation
+            setTimeout(() => {
+                shape.remove();
+            }, duration * 1000);
+        }
+
+        // Create initial shapes
+        for (let i = 0; i < 20; i++) {
+            setTimeout(createFloatingShape, Math.random() * 400);
+        }
+
+        // Continue creating shapes
+        setInterval(createFloatingShape, 100);
+    </script>
+</body>
+</html>
