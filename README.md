@@ -1,4 +1,4 @@
-# FestGenix
+# FestGenix Or EventAI
 
 FestGenix is a comprehensive event management platform built with Django that helps organizers create and manage events while providing participants with an intuitive interface to discover and register for events.
 
